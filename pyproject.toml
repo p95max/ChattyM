@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "chattym"
+version = "0.1.0"
+description = ""
+authors = ["maxx_PC <m.petrykin@gmx.de>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+django = "^5.2.7"
+djangorestframework = "^3.16.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -19,6 +19,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 
     "rest_framework",
+    'widget_tweaks',
+    'crispy_bootstrap5',
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
@@ -134,6 +136,14 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"
 ACCOUNT_UNIQUE_EMAIL = True
 LOGIN_REDIRECT_URL = "/"
+
+ACCOUNT_FORMS = {
+    'login': 'apps.users.forms.CustomLoginForm',
+    'signup': 'apps.users.forms.CustomSignupForm',
+}
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 
 

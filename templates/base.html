@@ -12,7 +12,7 @@
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
-            <a class="navbar-brand" href="{% url 'core:main' %}">Chatty</a>
+            <a class="navbar-brand" href="{% url 'core:main' %}">ChattyM</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -20,14 +20,14 @@
                 <ul class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'account_logout' %}">Выйти ({{ user.username }})</a>
+                            <a class="nav-link" href="{% url 'account_logout' %}">Logout ({{ user.username }})</a>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'account_login' %}">Войти</a>
+                            <a class="nav-link" href="{% url 'account_login' %}">Login</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'account_signup' %}">Регистрация</a>
+                            <a class="nav-link" href="{% url 'account_signup' %}">Create account</a>
                         </li>
                     {% endif %}
                 </ul>
@@ -51,7 +51,7 @@
 
     <footer class="footer mt-auto py-3 bg-light">
         <div class="container text-center">
-            <span class="text-muted">&copy; {% now "Y" %} Chatty. Все права защищены.</span>
+            <span class="text-muted">&copy; {% now "Y" %} ChattyM.</span>
         </div>
     </footer>
 

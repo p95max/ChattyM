@@ -16,6 +16,9 @@ djangorestframework-simplejwt = "^5.5.1"
 django-allauth = {extras = ["google"], version = "^65.11.2"}
 dj-rest-auth = "^7.0.1"
 pillow = "^11.3.0"
+django-widget-tweaks = "^1.5.0"
+django-crispy-forms = "^2.4"
+crispy-bootstrap5 = "^2025.6"
 
 
 [build-system]

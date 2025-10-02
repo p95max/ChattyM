@@ -1,18 +1,18 @@
 {% extends "base.html" %}
 {% load i18n widget_tweaks %}
 
-{% block title %}{% trans "Sign up" %} | {{ block.super }}{% endblock %}
+{% block title %}{% trans "Sign in" %} | {{ block.super }}{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
   <div class="col-12 col-md-8 col-lg-6">
     <div class="card shadow-sm">
       <div class="card-header bg-primary text-white text-center">
-        <h2 class="mb-0">{% trans "Создать аккаунт" %}</h2>
+        <h2 class="mb-0">{% trans "Login" %}</h2>
       </div>
 
       <div class="card-body">
-        <form method="post" enctype="multipart/form-data" novalidate>
+        <form method="post" novalidate>
           {% csrf_token %}
 
           {% if form.non_field_errors %}
@@ -44,21 +44,16 @@
                   {% endif %}
                 </div>
               </div>
-
             {% else %}
               <div class="row mb-3 align-items-center">
                 <label for="{{ field.id_for_label }}" class="col-sm-4 col-form-label">
                   {{ field.label }}
-                  {% if field.field.required %} <span class="text-danger">*</span>{% endif %}
                 </label>
-
                 <div class="col-sm-8">
                   {{ field|add_class:"form-control" }}
-
                   {% if field.help_text %}
                     <div class="form-text">{{ field.help_text }}</div>
                   {% endif %}
-
                   {% if field.errors %}
                     <div class="invalid-feedback d-block">
                       {% for e in field.errors %}{{ e }}{% if not forloop.last %}<br>{% endif %}{% endfor %}
@@ -72,19 +67,21 @@
           <div class="row mt-4">
             <div class="col-sm-4"></div>
             <div class="col-sm-8">
-              <div class="d-grid">
-                <button type="submit" class="btn btn-primary btn-lg">{% trans "Создать аккаунт" %}</button>
+              <div class="d-grid mb-2">
+                <button type="submit" class="btn btn-primary btn-lg">{% trans "Login" %}</button>
+              </div>
+              <div class="text-center">
+                <small class="text-muted">
+                  {% trans "No account?" %} <a href="{% url 'account_signup' %}">{% trans "Create account" %}</a>
+                </small>
+                <div class="mt-2">
+                  <a href="{% url 'account_reset_password' %}" class="small">{% trans "Forgot your password?" %}</a>
+                </div>
               </div>
             </div>
           </div>
-        </form>
-      </div>
 
-      <div class="card-footer text-center">
-        <small class="text-muted">
-          {% trans "Уже есть аккаунт?" %}&nbsp;
-          <a href="{% url 'account_login' %}" class="text-decoration-none">{% trans "Войти" %}</a>
-        </small>
+        </form>
       </div>
     </div>
   </div>

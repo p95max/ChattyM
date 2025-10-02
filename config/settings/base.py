@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     # Local apps
     "apps.core",
     "apps.users",
+    "apps.users.apps.UsersConfig",
     "apps.posts",
     "apps.comments",
     "apps.likes",
@@ -53,7 +54,6 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                # "apps.core.context_processors.some_context",  # if present
             ]
         },
     }

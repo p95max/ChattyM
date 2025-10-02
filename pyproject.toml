@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "chattym"
+name = "ChattyM - social network"
 version = "0.1.0"
 description = ""
 authors = ["maxx_PC <m.petrykin@gmx.de>"]

@@ -1,28 +1,26 @@
 FROM python:3.11-slim
 
-RUN apt-get update && apt-get install -y \
-    gcc \
-    build-essential \
-    libpq-dev \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN pip install poetry
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-ENV POETRY_VIRTUALENVS_CREATE=false \
-    POETRY_NO_INTERACTION=1
+# system deps + postgres client for pg_isready
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential curl git libpq-dev postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
 
-COPY pyproject.toml poetry.lock /app/
+ARG POETRY_VERSION=1.6.1
+RUN curl -sSL https://install.python-poetry.org | python3 - --version $POETRY_VERSION \
+    && ln -s /root/.local/bin/poetry /usr/local/bin/poetry
 
-RUN poetry install --no-root
+COPY pyproject.toml poetry.lock* /app/
+
+RUN poetry config virtualenvs.create false \
+    && poetry install --no-interaction --no-ansi --no-dev
 
 COPY . /app
 
-RUN useradd --create-home --shell /bin/bash app \
-    && chown -R app:app /app
-USER app
+RUN mkdir -p /app/staticfiles /app/media
 
 EXPOSE 8000
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

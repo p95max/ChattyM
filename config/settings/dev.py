@@ -4,7 +4,10 @@ import os
 """Development settings for local environment."""
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+_raw_hosts = os.environ.get('ALLOWED_HOSTS', '')
+ALLOWED_HOSTS = [h.strip() for h in _raw_hosts.split(',') if h.strip()]
+if not ALLOWED_HOSTS and DEBUG:
+    ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 """Database configuration using PostgreSQL with environment variables."""
 DATABASES = {
@@ -31,4 +34,4 @@ INTERNAL_IPS = ["127.0.0.1"]
 """Enable Django Debug Toolbar if environment variable is set."""
 if os.getenv("ENABLE_DEBUG_TOOLBAR", "0") == "1":
     INSTALLED_APPS += ["debug_toolbar"]  # noqa: PLW2901
-    MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware"] + MIDDLEWARE  # noqa: PLW2901
+    MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware"] + MIDDLEWARE

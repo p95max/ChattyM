@@ -5,7 +5,7 @@ from django.db import models
 class User(AbstractUser):
     """Application's custom user model.
 
-    Extends AbstractUser so username/email/auth work as usual.a
+    Extends AbstractUser so username/email/auth work as usual
     Add extra fields here as needed.
     """
     email = models.EmailField(unique=True)

@@ -12,8 +12,11 @@
       </div>
 
       <div class="card-body">
-        <form method="post" enctype="multipart/form-data" novalidate>
+        <form method="post" action="{% url 'account_signup' %}" novalidate>
           {% csrf_token %}
+          {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">
+          {% endif %}
 
           {% if form.non_field_errors %}
             <div class="alert alert-danger" role="alert">
@@ -34,9 +37,7 @@
                       {{ field.label }}
                     </label>
                   </div>
-                  {% if field.help_text %}
-                    <div class="form-text">{{ field.help_text }}</div>
-                  {% endif %}
+                  {% if field.help_text %}<div class="form-text" id="{{ field.id_for_label }}_help">{{ field.help_text }}</div>{% endif %}
                   {% if field.errors %}
                     <div class="invalid-feedback d-block">
                       {% for e in field.errors %}{{ e }}{% if not forloop.last %}<br>{% endif %}{% endfor %}
@@ -44,21 +45,26 @@
                   {% endif %}
                 </div>
               </div>
-
             {% else %}
               <div class="row mb-3 align-items-center">
-                <label for="{{ field.id_for_label }}" class="col-sm-4 col-form-label">
-                  {{ field.label }}
-                  {% if field.field.required %} <span class="text-danger">*</span>{% endif %}
-                </label>
-
+                <label for="{{ field.id_for_label }}" class="col-sm-4 col-form-label">{{ field.label }}</label>
                 <div class="col-sm-8">
-                  {{ field|add_class:"form-control" }}
-
-                  {% if field.help_text %}
-                    <div class="form-text">{{ field.help_text }}</div>
-                  {% endif %}
-
+                  {% with base="form-control" iserr=field.errors %}
+                    {% if forloop.first %}
+                      {% if iserr %}
+                        {{ field|add_class:base|add_class:"is-invalid"|attr:"autofocus:autofocus" }}
+                      {% else %}
+                        {{ field|add_class:base|attr:"autofocus:autofocus" }}
+                      {% endif %}
+                    {% else %}
+                      {% if iserr %}
+                        {{ field|add_class:base|add_class:"is-invalid" }}
+                      {% else %}
+                        {{ field|add_class:base }}
+                      {% endif %}
+                    {% endif %}
+                  {% endwith %}
+                  {% if field.help_text %}<div class="form-text" id="{{ field.id_for_label }}_help">{{ field.help_text }}</div>{% endif %}
                   {% if field.errors %}
                     <div class="invalid-feedback d-block">
                       {% for e in field.errors %}{{ e }}{% if not forloop.last %}<br>{% endif %}{% endfor %}
@@ -69,20 +75,15 @@
             {% endif %}
           {% endfor %}
 
-          <div class="row mt-4">
-            <div class="col-sm-4"></div>
-            <div class="col-sm-8">
-              <div class="d-grid">
-                <button type="submit" class="btn btn-primary btn-lg">{% trans "Create account" %}</button>
-              </div>
-            </div>
+          <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-primary btn-lg">{% trans "Create account" %}</button>
           </div>
         </form>
       </div>
 
       <div class="card-footer text-center">
         <small class="text-muted">
-          {% trans "Already have a account?" %}&nbsp;
+          {% trans "Already have an account?" %}&nbsp;
           <a href="{% url 'account_login' %}" class="text-decoration-none">{% trans "Login" %}</a>
         </small>
       </div>

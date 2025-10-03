@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Email confirmed" %} | {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-6 col-lg-5">
+    <div class="card shadow-sm mt-5">
+      <div class="card-header bg-success text-white text-center">
+        <h2 class="mb-0">{% trans "Email confirmed" %}</h2>
+      </div>
+      <div class="card-body text-center">
+        <p class="lead mb-4">
+          {% blocktrans %}Your email has been successfully confirmed. Welcome to Chatty!{% endblocktrans %}
+        </p>
+
+        <div class="d-flex gap-2 justify-content-center">
+          <a href="{% url 'core:main' %}" class="btn btn-primary">
+            {% trans "Go to Home" %}
+          </a>
+          <a href="{% url 'account_login' %}" class="btn btn-outline-secondary">
+            {% trans "Login" %}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

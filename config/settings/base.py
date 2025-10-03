@@ -39,7 +39,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.locale.LocaleMiddleware",  # i18n: верный порядок
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -80,18 +80,16 @@ AUTHENTICATION_BACKENDS = [
 
 SITE_ID = 1
 
-# Login/Logout flow
 LOGIN_URL = "account_login"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "account_login"
 ACCOUNT_LOGOUT_REDIRECT_URL = "account_login"
 
-# django-allauth (новый API, без депрекейтов)
-ACCOUNT_LOGIN_METHODS = {"email"}  # раньше: ACCOUNT_AUTHENTICATION_METHOD="email"
-ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]  # раньше: EMAIL_REQUIRED/USERNAME_REQUIRED
+ACCOUNT_LOGIN_METHODS = {"email"}
+ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
-ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"  # username в модели есть, но не обязателен
+ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"
 
 ACCOUNT_FORMS = {
     "login": "apps.users.forms.CustomLoginForm",

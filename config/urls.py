@@ -6,13 +6,12 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("accounts/", include("allauth.urls")),
-    path("", include("apps.core.urls")),
-    path("users/", include("apps.users.urls")),
-    path("posts/", include("apps.posts.urls")),
-    path("comments/", include("apps.comments.urls")),
-    path("likes/", include("apps.likes.urls")),
-
+    path("accounts/", include("allauth.urls")),  # ok
+    path("", include("apps.core.urls", namespace="core")),
+    path("users/", include("apps.users.urls", namespace="users")),
+    path("posts/", include("apps.posts.urls", namespace="posts")),
+    path("comments/", include("apps.comments.urls", namespace="comments")),
+    path("likes/", include("apps.likes.urls", namespace="likes")),
 ]
 
 try:

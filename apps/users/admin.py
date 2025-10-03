@@ -1,15 +1,22 @@
-"""Admin registration for custom User model."""
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import User
 
 @admin.register(User)
-class UserAdmin(DjangoUserAdmin):
-    """Admin for User model, extends default UserAdmin."""
-    fieldsets = DjangoUserAdmin.fieldsets + (
-        ("Additional", {"fields": ("birthday", "avatar", "created_at")}),
+class UserAdmin(BaseUserAdmin):
+    ordering = ("-date_joined",)
+    list_display = ("email", "username", "is_staff", "is_active", "date_joined")
+    search_fields = ("email", "username")
+    fieldsets = (
+        (None, {"fields": ("email", "password")}),
+        ("Personal info", {"fields": ("first_name", "last_name", "birthday", "avatar")}),
+        ("Permissions", {"fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")}),
+        ("Important dates", {"fields": ("last_login", "date_joined")}),
+        ("Legacy", {"fields": ("username",)}),
     )
-    add_fieldsets = DjangoUserAdmin.add_fieldsets + (
-        ("Additional", {"fields": ("birthday", "avatar")}),
+    add_fieldsets = (
+        (None, {
+            "classes": ("wide",),
+            "fields": ("email", "password1", "password2"),
+        }),
     )
-    readonly_fields = ("created_at",)

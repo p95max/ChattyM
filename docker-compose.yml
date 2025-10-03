@@ -14,17 +14,22 @@ services:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
 
   web:
     build:
       context: .
       dockerfile: Dockerfile
+    restart: unless-stopped
     env_file:
       - .env
     environment:
       DJANGO_SETTINGS_MODULE: config.settings.dev
-      DATABASE_URL: ${DATABASE_URL}
+      DB_HOST: db
+      DB_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - .:/app:rw
       - static_volume:/app/staticfiles
@@ -32,17 +37,8 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - db
-    command: >
-      bash -c "
-      echo 'Waiting for database...' &&
-      until pg_isready -h ${DB_HOST:-db} -p ${DB_PORT:-5432} -U ${POSTGRES_USER:-user}; do
-        sleep 1;
-      done &&
-      echo 'Apply migrations' &&
-      python manage.py migrate --noinput &&
-      python manage.py runserver 0.0.0.0:8000
-      "
+      db:
+        condition: service_healthy
 
 volumes:
   postgres_data:

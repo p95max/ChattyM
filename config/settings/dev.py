@@ -2,6 +2,7 @@ from .base import *
 import os
 
 """Development settings for local environment."""
+
 DEBUG = True
 
 _raw_hosts = os.environ.get('ALLOWED_HOSTS', '')
@@ -9,7 +10,6 @@ ALLOWED_HOSTS = [h.strip() for h in _raw_hosts.split(',') if h.strip()]
 if not ALLOWED_HOSTS and DEBUG:
     ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
-"""Database configuration using PostgreSQL with environment variables."""
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -21,17 +21,18 @@ DATABASES = {
     }
 }
 
-"""Email backend for development (console output)."""
-EMAIL_BACKEND = os.getenv(
-    "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
-)
+EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
 
-"""File storage backend for development (local filesystem)."""
+# dev-only
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+]
+
+INTERNAL_IPS = ["127.0.0.1", "localhost", "172.17.0.1"]
+
 DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
 
-INTERNAL_IPS = ["127.0.0.1"]
-
-"""Enable Django Debug Toolbar if environment variable is set."""
 if os.getenv("ENABLE_DEBUG_TOOLBAR", "0") == "1":
-    INSTALLED_APPS += ["debug_toolbar"]  # noqa: PLW2901
+    INSTALLED_APPS += ["debug_toolbar"]
     MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware"] + MIDDLEWARE

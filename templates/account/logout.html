@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Log out" %} | {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-6 col-lg-4">
+    <div class="card shadow-sm mt-5">
+      <div class="card-header bg-danger text-white text-center">
+        <h2 class="mb-0">{% trans "Log out" %}</h2>
+      </div>
+      <div class="card-body text-center">
+        <p>{% trans "Are you sure you want to log out?" %}</p>
+        <form method="post" action="{% url 'account_logout' %}">
+          {% csrf_token %}
+          <div class="d-flex justify-content-center gap-3">
+            <button type="submit" class="btn btn-danger">{% trans "Log out" %}</button>
+            <a href="{% url 'core:main' %}" class="btn btn-secondary">{% trans "Cancel" %}</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

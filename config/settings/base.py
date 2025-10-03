@@ -71,7 +71,11 @@ ASGI_APPLICATION = "config.asgi.application"
 AUTH_USER_MODEL = "users.User"
 
 """Internationalization settings."""
-LANGUAGE_CODE = "ru-ru"
+LANGUAGE_CODE = "en-us"
+LANGUAGES = [
+    ("en", "English"),
+    ("de", "Deutsch"),
+]
 TIME_ZONE = os.getenv("TIME_ZONE", "UTC")
 USE_I18N = True
 USE_L10N = True
@@ -131,11 +135,14 @@ SITE_ID = 1
 
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = "optional"
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"
 ACCOUNT_UNIQUE_EMAIL = True
 LOGIN_REDIRECT_URL = "/"
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+DEFAULT_FROM_EMAIL = "webmaster@localhost"
 
 ACCOUNT_FORMS = {
     'login': 'apps.users.forms.CustomLoginForm',

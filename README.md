@@ -1,6 +1,6 @@
 # ChattyM — Social Network (Django)
 
-**ChattyM** is a learning project: a minimal social network built with **Django 5**, **PostgreSQL**, and **Bootstrap 5**.  
+**ChattyM** is a minimal social network built with **Django 5**, **PostgreSQL**, and **Bootstrap 5**.  
 It demonstrates core web development skills: authentication, user profiles, content creation, and containerized deployment.
 
 ## Features

@@ -1,12 +1,15 @@
+# Local dev server
 python manage.py runserver --settings=config.settings.dev
 
+# Migrations
 python manage.py makemigrations --settings=config.settings.base
 python manage.py migrate --settings=config.settings.base
 
-
+# Into container
 docker compose exec web python manage.py makemigrations posts
 
 docker compose exec web python manage.py makemigrations
-
 docker compose exec web python manage.py migrate
 
+# API
+http://127.0.0.1:8000/api/docs/

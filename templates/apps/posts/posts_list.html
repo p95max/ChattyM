@@ -13,52 +13,55 @@
   <div class="row row-cols-1 row-cols-md-3 g-3">
     {% for post in posts %}
       <div class="col">
-        <div class="card shadow-sm h-100" style="max-width: 260px; margin: auto;">
-          {% if post.image %}
-            <img src="{{ post.image.url }}" class="card-img-top object-fit-cover"
-                 alt="{{ post.title }}" style="height: 100px; object-fit: cover;">
-          {% endif %}
-          <div class="card-body p-2">
-            <h6 class="card-title mb-1">
-              <a href="{% url 'posts:detail' post.pk %}" class="text-decoration-none text-dark">
-                {{ post.title }}
-              </a>
-            </h6>
-            <p class="card-text text-muted small mb-2">{{ post.text|truncatechars:80 }}</p>
+        <a href="{% url 'posts:detail' post.pk %}"
+           class="text-decoration-none text-dark"
+           style="display: block; transition: transform .15s ease, box-shadow .15s ease;">
+          <div class="card shadow-sm h-100 hover-card" style="max-width: 260px; margin: auto;">
+
+            {% if post.image %}
+              <img src="{{ post.image.url }}"
+                   alt="{{ post.title }}"
+                   class="card-img-top"
+                   style="height: 100px; object-fit: cover;">
+            {% else %}
+              <!-- Заглушка -->
+              <div class="d-flex align-items-center justify-content-center bg-light text-muted"
+                   style="height: 100px; font-size: 1.2rem; border-bottom: 1px solid #dee2e6;">
+                <i class="bi bi-image" style="font-size: 1.5rem;"></i>&nbsp;No image
+              </div>
+            {% endif %}
+
+            <div class="card-body p-2">
+              <h6 class="card-title mb-1">{{ post.title }}</h6>
+              <p class="card-text text-muted small mb-2">{{ post.text|truncatechars:80 }}</p>
+            </div>
+
+            <div class="card-footer bg-white d-flex justify-content-between small text-muted py-1">
+              <span>{{ post.user.username|default:post.user.email }}</span>
+              <span>{{ post.created_at|date:"d - M - Y" }}</span>
+            </div>
+
           </div>
-          <div class="card-footer bg-white d-flex justify-content-between small text-muted py-1">
-            <span>{{ post.user.username|default:post.user.email }}</span>
-            <span>{{ post.created_at|date:"M d" }}</span>
-          </div>
-        </div>
+        </a>
       </div>
     {% endfor %}
   </div>
 
-  <!-- Pagination -->
-  {% if is_paginated %}
-    <nav aria-label="Page navigation" class="mt-4">
-      <ul class="pagination justify-content-center pagination-sm">
-        {% if page_obj.has_previous %}
-          <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
-          </li>
-        {% endif %}
-        {% for num in page_obj.paginator.page_range %}
-          <li class="page-item {% if num == page_obj.number %}active{% endif %}">
-            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-          </li>
-        {% endfor %}
-        {% if page_obj.has_next %}
-          <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
-          </li>
-        {% endif %}
-      </ul>
-    </nav>
-  {% endif %}
+  {% include "includes/pagination.html" %}
+
 {% else %}
   <div class="alert alert-info">No posts yet.</div>
 {% endif %}
 
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.hover-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
+}
+
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css");
+</style>
 {% endblock %}

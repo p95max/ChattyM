@@ -10,7 +10,7 @@ class PostListView(ListView):
     model = Post
     template_name = "apps/posts/posts_list.html"
     context_object_name = "posts"
-    paginate_by = 10
+    paginate_by = 9
     queryset = Post.objects.filter(is_active=True).select_related("user")
 
 

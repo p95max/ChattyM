@@ -1,1 +1,4 @@
 python manage.py runserver --settings=config.settings.dev
+
+python manage.py makemigrations --settings=config.settings.base
+python manage.py migrate --settings=config.settings.base

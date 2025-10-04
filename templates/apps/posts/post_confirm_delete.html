@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Delete Post | {{ block.super }}{% endblock %}
+{% block content %}
+
+<div class="card border-danger shadow-sm">
+  <div class="card-header bg-danger text-white">
+    <h4 class="mb-0">Delete Post</h4>
+  </div>
+  <div class="card-body">
+    <p>Are you sure you want to delete "<strong>{{ object.title }}</strong>"?</p>
+    <form method="post">
+      {% csrf_token %}
+      <div class="d-flex justify-content-between">
+        <a href="{% url 'posts:detail' object.pk %}" class="btn btn-outline-secondary">Cancel</a>
+        <button type="submit" class="btn btn-danger">Delete</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

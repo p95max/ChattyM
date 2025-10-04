@@ -2,3 +2,11 @@ python manage.py runserver --settings=config.settings.dev
 
 python manage.py makemigrations --settings=config.settings.base
 python manage.py migrate --settings=config.settings.base
+
+
+docker compose exec web python manage.py makemigrations posts
+
+docker compose exec web python manage.py makemigrations
+
+docker compose exec web python manage.py migrate
+

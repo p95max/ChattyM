@@ -38,7 +38,13 @@
             </div>
 
             <div class="card-footer bg-white d-flex justify-content-between small text-muted py-1">
-              <span>{{ post.user.username|default:post.user.email }}</span>
+
+            <a href="{% url 'users:author_profile' post.user.username %}">
+                {{ post.user.username|default:post.user.email }}
+            </a>
+
+
+
               <span>{{ post.created_at|date:"d - M - Y" }}</span>
             </div>
 

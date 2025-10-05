@@ -41,7 +41,7 @@
         <span class="d-none d-sm-inline">{{ user.username|default:user.email }}</span>
       </a>
       <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileMenu">
-        <li><a class="dropdown-item" href="{% url 'users:profile' %}">My Profile</a></li>
+        <li><a class="dropdown-item" href="{% url 'users:my_profile' %}">My Profile</a></li>
         <li><a class="dropdown-item" href="{% url 'posts:user_posts' %}">My Posts</a></li>
         <li><hr class="dropdown-divider"></li>
         <li>

@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% load static %}
+
 {% block title %}{{ post.title }} | {{ block.super }}{% endblock %}
 {% block content %}
 
@@ -6,7 +8,7 @@
   {% if post.image %}
     <div class="text-center mt-3">
       <!-- mini img -->
-      <img src="{{ post.image.url }}"
+      <img src="{% static post.image %}"
            alt="{{ post.title }}"
            class="rounded shadow-sm"
            style="width: 25%; max-width: 1150px; height: auto; cursor: pointer;"
@@ -19,7 +21,7 @@
       <div class="modal-dialog modal-fullscreen">
         <div class="modal-content bg-dark border-0">
           <div class="modal-body p-0 d-flex align-items-center justify-content-center">
-            <img src="{{ post.image.url }}"
+            <img src="{% static post.image %}"
                  alt="{{ post.title }}"
                  class="img-fluid rounded shadow-lg"
                  style="max-height: 100vh; object-fit: contain;">

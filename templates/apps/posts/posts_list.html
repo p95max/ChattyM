@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% load static %}
+
 {% block title %}Posts | {{ block.super }}{% endblock %}
 {% block content %}
 
@@ -19,12 +21,11 @@
           <div class="card shadow-sm h-100 hover-card" style="max-width: 260px; margin: auto;">
 
             {% if post.image %}
-              <img src="{{ post.image.url }}"
+              <img src="{% static post.image %}"
                    alt="{{ post.title }}"
                    class="card-img-top"
                    style="height: 100px; object-fit: cover;">
             {% else %}
-              <!-- Заглушка -->
               <div class="d-flex align-items-center justify-content-center bg-light text-muted"
                    style="height: 100px; font-size: 1.2rem; border-bottom: 1px solid #dee2e6;">
                 <i class="bi bi-image" style="font-size: 1.5rem;"></i>&nbsp;No image

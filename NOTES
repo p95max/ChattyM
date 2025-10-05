@@ -13,3 +13,8 @@ docker compose exec web python manage.py migrate
 
 # API
 http://127.0.0.1:8000/api/docs/
+
+# Fixtures
+docker compose exec web python manage.py loaddata fixtures/users_fixture.json
+docker compose exec web python manage.py loaddata fixtures/posts_fixture.json
+

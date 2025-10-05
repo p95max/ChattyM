@@ -48,3 +48,18 @@ class PostDeleteView(LoginRequiredMixin, AuthorRequiredMixin, DeleteView):
     success_url = reverse_lazy("posts:list")
 
 
+
+
+class UserPostsView(LoginRequiredMixin, ListView):
+    """List of posts created by the currently logged-in user."""
+    model = Post
+    template_name = "apps/posts/user_posts.html"
+    context_object_name = "posts"
+    ordering = ["-created_at"]
+    paginate_by = 9
+
+    def get_queryset(self):
+        """Filter posts belonging to the current user only."""
+        return Post.objects.filter(user=self.request.user).order_by("-created_at")
+
+

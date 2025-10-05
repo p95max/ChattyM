@@ -47,3 +47,13 @@ The project uses **django-allauth 2.0** for authentication:
 - password reset and recovery, 
 - email verification (console output in dev),
 - uses custom `User` model extends Django’s `AbstractUser` with email-based authentication.
+
+## Testing
+
+Project have test fixtures for test users and their posts: **/fixtures/** (users password: **123456**, admins password: **admin**) and can be downloaded
+into db in docker container:
+```bash
+    docker compose exec web python manage.py loaddata fixtures/users_fixture.json
+    docker compose exec web python manage.py loaddata fixtures/posts_fixture.json
+```
+Images for test posts are in **static/images/posts/**

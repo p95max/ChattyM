@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}My Posts | {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="mb-0">My Posts</h2>
+  <a href="{% url 'posts:create' %}" class="btn btn-primary btn-sm">+ New Post</a>
+</div>
+
+{% if posts %}
+  <div class="row row-cols-1 row-cols-md-3 g-3">
+    {% for post in posts %}
+      <div class="col">
+        <a href="{% url 'posts:detail' post.pk %}"
+           class="text-decoration-none text-dark"
+           style="display: block; transition: transform .15s ease, box-shadow .15s ease;">
+          <div class="card shadow-sm h-100 hover-card" style="max-width: 260px; margin: auto;">
+            
+            {% if post.image %}
+              <img src="{% static post.image %}"
+                   alt="{{ post.title }}"
+                   class="card-img-top"
+                   style="height: 100px; object-fit: cover;">
+            {% else %}
+              <div class="d-flex align-items-center justify-content-center bg-light text-muted"
+                   style="height: 100px; font-size: 1.2rem; border-bottom: 1px solid #dee2e6;">
+                <i class="bi bi-image" style="font-size: 1.5rem;"></i>&nbsp;No image
+              </div>
+            {% endif %}
+
+            <div class="card-body p-2">
+              <h6 class="card-title mb-1">{{ post.title }}</h6>
+              <p class="card-text text-muted small mb-2">{{ post.text|truncatechars:80 }}</p>
+            </div>
+
+            <div class="card-footer bg-white d-flex justify-content-between small text-muted py-1">
+              <span>{{ post.created_at|date:"M d" }}</span>
+              <a href="{% url 'posts:edit' post.pk %}" class="text-muted small">Edit</a>
+            </div>
+          </div>
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% include "includes/pagination.html" %}
+{% else %}
+  <div class="alert alert-info text-center">You haven’t created any posts yet.</div>
+{% endif %}
+{% endblock %}

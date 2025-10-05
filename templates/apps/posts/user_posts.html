@@ -17,11 +17,12 @@
            class="text-decoration-none text-dark"
            style="display: block; transition: transform .15s ease, box-shadow .15s ease;">
           <div class="card shadow-sm h-100 hover-card" style="max-width: 260px; margin: auto;">
-            
+
             {% if post.image %}
-              <img src="{% static post.image %}"
+              <img src="{{ post.image.url }}"
                    alt="{{ post.title }}"
                    class="card-img-top"
+                   loading="lazy"
                    style="height: 100px; object-fit: cover;">
             {% else %}
               <div class="d-flex align-items-center justify-content-center bg-light text-muted"

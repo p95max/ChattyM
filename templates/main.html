@@ -28,8 +28,6 @@
           </div>
         {% endif %}
       </div>
-
-
     </div>
   </div>
 </section>
@@ -49,9 +47,10 @@
                class="text-decoration-none text-dark d-block">
               <div class="card shadow-sm h-100 hover-card" style="max-width: 260px; margin:auto;">
                 {% if post.image %}
-                  <img src="{% static post.image %}"
+                  <img src="{{ post.image.url }}"
                        alt="{{ post.title }}"
                        class="card-img-top"
+                       loading="lazy"
                        style="height: 100px; object-fit: cover;">
                 {% else %}
                   <div class="d-flex align-items-center justify-content-center bg-light text-muted"

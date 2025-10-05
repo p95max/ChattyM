@@ -21,7 +21,7 @@
           <div class="card shadow-sm h-100 hover-card" style="max-width: 260px; margin: auto;">
 
             {% if post.image %}
-              <img src="{% static post.image %}"
+              <img src="{{ post.image.url }}"
                    alt="{{ post.title }}"
                    class="card-img-top"
                    style="height: 100px; object-fit: cover;">
@@ -38,13 +38,9 @@
             </div>
 
             <div class="card-footer bg-white d-flex justify-content-between small text-muted py-1">
-
-            <a href="{% url 'users:author_profile' post.user.username %}">
+              <a href="{% url 'users:author_profile' post.user.username %}">
                 {{ post.user.username|default:post.user.email }}
-            </a>
-
-
-
+              </a>
               <span>{{ post.created_at|date:"d - M - Y" }}</span>
             </div>
 

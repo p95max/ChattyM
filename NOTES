@@ -16,20 +16,10 @@ docker-compose exec web bash
 # API
 http://127.0.0.1:8000/api/docs/
 
-# Fixtures
+# Fixtures for docker container
 docker compose exec web python manage.py loaddata fixtures/users_fixture.json
+docker compose exec web python manage.py loaddata fixtures/users_emails_fixture.json
 docker compose exec web python manage.py loaddata fixtures/posts_fixture.json
 
-docker-compose exec web python manage.py shell -c "from django.contrib.auth import get_user_model; from allauth.account.models import EmailAddress; User=get_user_model(); names=['admin','user1','user2','user3','user4','user5'];
-import sys
-for n in names:
-    try:
-        u=User.objects.get(username=n)
-        u.set_password('123456')
-        u.save()
-        EmailAddress.objects.update_or_create(user=u, email=u.email, defaults={'verified': True, 'primary': True})
-        print('OK:', n)
-    except Exception as e:
-        print('SKIP', n, e, file=sys.stderr)"
 
 

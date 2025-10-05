@@ -11,6 +11,7 @@
   {% endif %}
 </div>
 
+{#Posts cards#}
 {% if posts %}
   <div class="row row-cols-1 row-cols-md-3 g-3">
     {% for post in posts %}
@@ -36,14 +37,7 @@
               <h6 class="card-title mb-1">{{ post.title }}</h6>
               <p class="card-text text-muted small mb-2">{{ post.text|truncatechars:80 }}</p>
             </div>
-
-            <div class="card-footer bg-white d-flex justify-content-between small text-muted py-1">
-              <a href="{% url 'users:author_profile' post.user.username %}">
-                {{ post.user.username|default:post.user.email }}
-              </a>
-              <span>{{ post.created_at|date:"d - M - Y" }}</span>
-            </div>
-
+          {% include "includes/post_card_footer.html" %}
           </div>
         </a>
       </div>

@@ -1,0 +1,8 @@
+<div class="card-footer bg-white d-flex align-items-center small text-muted py-1">
+  <a href="{% url 'users:author_profile' post.user.username %}"
+     class="flex-grow-1 text-truncate me-2"
+     style="min-width: 0;">
+    {{ post.user.username|default:post.user.email }}
+  </a>
+  <span class="text-nowrap">{{ post.created_at|date:"M d" }}</span>
+</div>

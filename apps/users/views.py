@@ -51,8 +51,49 @@ class MyProfileView(BaseProfileView):
         return render(request, self.template_name, self.get_context(request, request.user, form=form))
 
 
+from django.shortcuts import render, redirect
+from django.urls import reverse
+from django.contrib import messages
+from django.utils.http import url_has_allowed_host_and_scheme
+
+from django.views import View
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
 class ProfileView(BaseProfileView):
 
+    def _safe_redirect_back(self, request, fallback="core:main"):
+        referer = request.META.get("HTTP_REFERER")
+        if referer and url_has_allowed_host_and_scheme(referer, allowed_hosts={request.get_host()}):
+            return redirect(referer)
+        return redirect(reverse(fallback))
+
     def get(self, request, username, *args, **kwargs):
-        target = get_object_or_404(User, username=username)
+        try:
+            target = User.objects.get(username=username)
+        except User.DoesNotExist:
+            messages.warning(request, "User does not exist.")
+            return self._safe_redirect_back(request)
+
         return render(request, self.template_name, self.get_context(request, target))
+
+    def post(self, request, username, *args, **kwargs):
+
+        try:
+            target = User.objects.get(username=username)
+        except User.DoesNotExist:
+            messages.warning(request, "User does not exist.")
+            return self._safe_redirect_back(request)
+
+        if target != request.user:
+            messages.error(request, "Your have not permission to edit another profile.")
+            return self._safe_redirect_back(request)
+
+        form = ProfileForm(request.POST, request.FILES, instance=target)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated.")
+            return redirect("users:author_profile", username=target.username)
+        return render(request, self.template_name, self.get_context(request, target, form=form))
+

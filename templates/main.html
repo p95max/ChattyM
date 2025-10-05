@@ -39,42 +39,45 @@
       <a href="{% url 'posts:list' %}" class="btn btn-sm btn-outline-secondary">View all</a>
     </div>
 
+    {#Posts cards#}
     {% if latest_posts %}
       <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
-        {% for post in latest_posts %}
-          <div class="col">
-            <a href="{% url 'posts:detail' post.pk %}"
-               class="text-decoration-none text-dark d-block">
-              <div class="card shadow-sm h-100 hover-card" style="max-width: 260px; margin:auto;">
-                {% if post.image %}
-                  <img src="{{ post.image.url }}"
-                       alt="{{ post.title }}"
-                       class="card-img-top"
-                       loading="lazy"
-                       style="height: 100px; object-fit: cover;">
-                {% else %}
-                  <div class="d-flex align-items-center justify-content-center bg-light text-muted"
-                       style="height: 100px; font-size: 1.1rem; border-bottom: 1px solid #dee2e6;">
-                    <i class="bi bi-image" style="font-size: 1.4rem; opacity: .6;"></i>&nbsp;No image
-                  </div>
-                {% endif %}
+  {% for post in latest_posts %}
+    <div class="col">
+      <a href="{% url 'posts:detail' post.pk %}"
+         class="text-decoration-none text-dark d-block">
+        <div class="card shadow-sm h-100 hover-card" style="max-width: 260px; margin:auto;">
+          {% if post.image %}
+            <img src="{{ post.image.url }}"
+                 alt="{{ post.title }}"
+                 class="card-img-top"
+                 loading="lazy"
+                 style="height: 100px; object-fit: cover;">
+          {% else %}
+            <div class="d-flex align-items-center justify-content-center bg-light text-muted"
+                 style="height: 100px; font-size: 1.1rem; border-bottom: 1px solid #dee2e6;">
+              <i class="bi bi-image" style="font-size: 1.4rem; opacity: .6;"></i>&nbsp;No image
+            </div>
+          {% endif %}
 
-                <div class="card-body p-2">
-                  <h6 class="card-title mb-1 text-truncate">{{ post.title }}</h6>
-                  <p class="card-text text-muted small mb-2">{{ post.text|truncatechars:80 }}</p>
-                </div>
-                <div class="card-footer bg-white d-flex justify-content-between small text-muted py-1">
-                  <span>{{ post.user.username|default:post.user.email }}</span>
-                  <span>{{ post.created_at|date:"M d" }}</span>
-                </div>
-              </div>
-            </a>
+          <div class="card-body p-2">
+            <h6 class="card-title mb-1 text-truncate">{{ post.title }}</h6>
+            <p class="card-text text-muted small mb-2">{{ post.text|truncatechars:80 }}</p>
           </div>
-        {% endfor %}
-      </div>
+
+          {% include "includes/post_card_footer.html" %}
+
+        </div>
+      </a>
+    </div>
+  {% endfor %}
+</div>
+
+
     {% else %}
       <div class="alert alert-info mb-0">No posts yet. Be the first to create one.</div>
     {% endif %}
+
   </div>
 </section>
 {% endblock %}

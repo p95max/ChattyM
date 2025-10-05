@@ -2,8 +2,7 @@ services:
   db:
     image: postgres:15
     restart: unless-stopped
-    env_file:
-      - .env
+    env_file: [.env]
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -21,8 +20,7 @@ services:
       context: .
       dockerfile: Dockerfile
     restart: unless-stopped
-    env_file:
-      - .env
+    env_file: [.env]
     environment:
       DJANGO_SETTINGS_MODULE: config.settings.dev
       DB_HOST: db
@@ -35,7 +33,6 @@ services:
       - ./static:/app/static
       - static_volume:/app/staticfiles
       - ./media:/app/media
-
     ports:
       - "8000:8000"
     depends_on:
@@ -45,4 +42,3 @@ services:
 volumes:
   postgres_data:
   static_volume:
-  media_volume:

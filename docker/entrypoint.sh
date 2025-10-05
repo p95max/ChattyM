@@ -16,6 +16,11 @@ echo "[web] DB is up."
 echo "[web] Django system check..."
 python -m django check
 
+echo "[web] Creating media directory..."
+mkdir -p /app/media/avatars /app/media/posts/images /app/staticfiles
+chmod -R 775 /app/media /app/staticfiles || true
+
+
 echo "[web] Apply migrations..."
 python manage.py migrate --noinput
 

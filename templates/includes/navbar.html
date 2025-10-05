@@ -10,6 +10,7 @@
 
     <div class="collapse navbar-collapse" id="navbarNav">
 
+      <!-- nav menu -->
       <ul class="navbar-nav me-auto">
         <li class="nav-item">
           <a class="nav-link {% if request.resolver_match.url_name == 'main' %}active{% endif %}"
@@ -23,37 +24,58 @@
             Posts
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link {% if request.resolver_match.url_name == 'users_posts' %}active{% endif %}"
-             href="{% url 'posts:user_posts' %}">
-            My Posts
-          </a>
-        </li>
       </ul>
 
+      <!-- user menu -->
       <ul class="navbar-nav ms-auto">
-        {% if user.is_authenticated %}
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'account_logout' %}">
-              Logout <span class="text-muted small">({{ user.username }})</span>
-            </a>
-          </li>
+  {% if user.is_authenticated %}
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileMenu"
+         role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        {% if user.avatar %}
+          <img src="{{ user.avatar.url }}" alt="avatar"
+               class="rounded-circle me-2" style="width:28px;height:28px;object-fit:cover;">
         {% else %}
-          <li class="nav-item">
-            <a class="nav-link {% if request.resolver_match.url_name == 'account_login' %}active{% endif %}"
-               href="{% url 'account_login' %}">
-              Login
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {% if request.resolver_match.url_name == 'account_signup' %}active{% endif %}"
-               href="{% url 'account_signup' %}">
-              Create account
-            </a>
-          </li>
+          <span class="avatar-ph me-2">{{ user.username|default:user.email|slice:":1"|upper }}</span>
         {% endif %}
+        <span class="d-none d-sm-inline">{{ user.username|default:user.email }}</span>
+      </a>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileMenu">
+        <li><a class="dropdown-item" href="{% url 'users:profile' %}">My Profile</a></li>
+        <li><a class="dropdown-item" href="{% url 'posts:user_posts' %}">My Posts</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li>
+          <form method="post" action="{% url 'account_logout' %}" class="px-3 py-1">
+            {% csrf_token %}
+            <button type="submit" class="dropdown-item px-0">Logout</button>
+          </form>
+        </li>
       </ul>
+    </li>
+  {% else %}
+    <li class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle" href="#" id="authMenu"
+         role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Account
+      </a>
+      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="authMenu">
+        <li><a class="dropdown-item" href="{% url 'account_login' %}">Login</a></li>
+        <li><a class="dropdown-item" href="{% url 'account_signup' %}">Create account</a></li>
+      </ul>
+    </li>
+  {% endif %}
+</ul>
 
     </div>
   </div>
 </nav>
+
+<style>
+  .avatar-ph {
+    width: 28px; height: 28px; display: inline-flex;
+    align-items: center; justify-content: center;
+    border-radius: 50%; background: #e9ecef; color: #6c757d;
+    font-weight: 600; font-size: 0.9rem; text-transform: uppercase;
+  }
+</style>
+

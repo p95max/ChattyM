@@ -1,13 +1,95 @@
 {% extends "base.html" %}
-{% load static i18n widget_tweaks %}
+{% load static %}
+
 {% block title %}Home | {{ block.super }}{% endblock %}
+
+{% block content %}
+
+<section class="py-5">
+  <div class="container">
+    <div class="row align-items-center g-4">
+      <div class="col-12 col-lg-7">
+        <h1 class="display-5 fw-bold mb-3">ChattyM — share what matters</h1>
+        <p class="lead text-muted mb-4">
+          Lightweight social feed. Create posts, browse the feed, engage.
+        </p>
+
+        {% if user.is_authenticated %}
+          <div class="d-flex flex-wrap gap-2">
+            <a href="{% url 'posts:create' %}" class="btn btn-primary btn-lg">+ New Post</a>
+            <a href="{% url 'posts:user_posts' %}" class="btn btn-outline-primary btn-lg">My Posts</a>
+            <a href="{% url 'posts:list' %}" class="btn btn-outline-secondary btn-lg">Browse Feed</a>
+          </div>
+        {% else %}
+          <div class="d-flex flex-wrap gap-2">
+            <a href="{% url 'account_signup' %}" class="btn btn-primary btn-lg">Get Started</a>
+            <a href="{% url 'account_login' %}" class="btn btn-outline-primary btn-lg">Sign in</a>
+            <a href="{% url 'posts:list' %}" class="btn btn-outline-secondary btn-lg">Browse Feed</a>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="col-12 col-lg-5">
+        <div class="card border-0 shadow-sm">
+
+          <img src="{% static 'images/main_logo.png' %}" class="card-img-top" alt="ChattyM">
+
+          <div class="card-body">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="pb-4">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="h4 mb-0">Latest users posts</h2>
+      <a href="{% url 'posts:list' %}" class="btn btn-sm btn-outline-secondary">View all</a>
+    </div>
+
+    {% if latest_posts %}
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3">
+        {% for post in latest_posts %}
+          <div class="col">
+            <a href="{% url 'posts:detail' post.pk %}"
+               class="text-decoration-none text-dark d-block">
+              <div class="card shadow-sm h-100 hover-card" style="max-width: 260px; margin:auto;">
+                {% if post.image %}
+                  <img src="{% static post.image %}"
+                       alt="{{ post.title }}"
+                       class="card-img-top"
+                       style="height: 100px; object-fit: cover;">
+                {% else %}
+                  <div class="d-flex align-items-center justify-content-center bg-light text-muted"
+                       style="height: 100px; font-size: 1.1rem; border-bottom: 1px solid #dee2e6;">
+                    <i class="bi bi-image" style="font-size: 1.4rem; opacity: .6;"></i>&nbsp;No image
+                  </div>
+                {% endif %}
+
+                <div class="card-body p-2">
+                  <h6 class="card-title mb-1 text-truncate">{{ post.title }}</h6>
+                  <p class="card-text text-muted small mb-2">{{ post.text|truncatechars:80 }}</p>
+                </div>
+                <div class="card-footer bg-white d-flex justify-content-between small text-muted py-1">
+                  <span>{{ post.user.username|default:post.user.email }}</span>
+                  <span>{{ post.created_at|date:"M d" }}</span>
+                </div>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="alert alert-info mb-0">No posts yet. Be the first to create one.</div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
 
 {% block extra_css %}
 <style>
-
+.hover-card:hover { transform: translateY(-3px); box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15); }
 </style>
-{% endblock %}
-
-{% block content %}
-hello
 {% endblock %}

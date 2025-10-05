@@ -153,9 +153,9 @@ docker-compose.override.yml
 # Logs
 *.log
 
-# Media & Static (в .gitignore, но в контейнере монтируется)
-/media/
-/static/
+# Media & Static
++/media/
++/staticfiles/
 
 # Poetry
 poetry.lock

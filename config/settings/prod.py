@@ -61,3 +61,5 @@ EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.smtp.Email
 
 """Logging level configuration."""
 LOGGING["root"]["level"] = os.getenv("LOG_LEVEL", "INFO")
+
+STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"

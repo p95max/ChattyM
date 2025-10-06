@@ -59,6 +59,43 @@
   box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
 }
 
-@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css");
+.navbar {
+  position: relative;
+  z-index: 99999 !important;
+}
+.navbar .dropdown-menu,
+.dropdown-menu.show {
+  z-index: 100000 !important;
+}
+
+body.dropdown-open .hover-card,
+body.dropdown-open .col > a {
+  pointer-events: none !important;
+  z-index: 0 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
 </style>
-{% endblock %}
+{% endblock extra_css %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script>
+    (function () {
+      document.addEventListener('DOMContentLoaded', function () {
+        var dropdownEls = document.querySelectorAll('.dropdown');
+
+        dropdownEls.forEach(function (el) {
+          el.addEventListener('show.bs.dropdown', function () {
+            document.body.classList.add('dropdown-open');
+          });
+          el.addEventListener('hide.bs.dropdown', function () {
+            document.body.classList.remove('dropdown-open');
+          });
+        });
+      });
+    })();
+  </script>
+{% endblock scripts %}
+

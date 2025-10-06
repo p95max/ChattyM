@@ -1,3 +1,5 @@
+{% load static %}
+
 <button
   type="button"
   class="btn btn-sm btn-outline-primary like-btn"
@@ -9,3 +11,7 @@
   <span class="heart-emoji"></span>
   <span class="likes-number">{{ post.likes_count }}</span>
 </button>
+
+{% block extra_js %}
+    <script src="{% static 'js/likes.js' %}"></script>
+{% endblock extra_js %}

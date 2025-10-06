@@ -13,7 +13,7 @@
   <div class="flex-grow-1">
     <div class="d-flex align-items-center">
       <strong class="me-2">{{ comment.user.get_full_name|default:comment.user.username }}</strong>
-      <small class="text-muted">{{ comment.created_at|date:"SHORT_DATETIME_FORMAT" }}</small>
+      <small class="text-muted">{{ comment.created_at|date:"d.m.Y H:i" }}</small>
       {% if comment.updated_at %}
         <small class="text-muted ms-2">(edited)</small>
       {% endif %}
@@ -29,7 +29,6 @@
 
     <div class="small text-muted d-flex gap-2">
       {% if user.is_authenticated %}
-        <a href="#" class="reply-link" data-parent="{{ comment.pk }}" data-post="{{ comment.post.pk }}">Reply</a>
         {% if user == comment.user or user.is_staff %}
           <a href="{% url 'comments:edit' comment.pk %}">Edit</a>
           <form action="{% url 'comments:delete' comment.pk %}" method="post" class="d-inline-block ms-1">

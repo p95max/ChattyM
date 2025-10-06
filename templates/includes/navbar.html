@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+<nav class="navbar navbar-expand-lg navbar-light navbar-custom shadow-sm">
   <div class="container">
 
     <a class="navbar-brand fw-bold" href="{% url 'core:main' %}">ChattyM</a>
@@ -28,54 +28,112 @@
 
       <!-- user menu -->
       <ul class="navbar-nav ms-auto">
-  {% if user.is_authenticated %}
-    <li class="nav-item dropdown">
-      <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileMenu"
-         role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        {% if user.avatar %}
-          <img src="{{ user.avatar.url }}" alt="avatar"
-               class="rounded-circle me-2" style="width:28px;height:28px;object-fit:cover;">
+        {% if user.is_authenticated %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileMenu"
+               role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              {% if user.avatar %}
+                <img src="{{ user.avatar.url }}" alt="avatar"
+                     class="rounded-circle me-2 navbar-avatar">
+              {% else %}
+                <span class="avatar-ph me-2">{{ user.username|default:user.email|slice:":1"|upper }}</span>
+              {% endif %}
+              <span class="d-none d-sm-inline navbar-username">{{ user.username|default:user.email }}</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileMenu">
+              <li><a class="dropdown-item" href="{% url 'users:my_profile' %}">My Profile</a></li>
+              <li><a class="dropdown-item" href="{% url 'posts:user_posts' %}">My Posts</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <form method="post" action="{% url 'account_logout' %}" class="px-3 py-1">
+                  {% csrf_token %}
+                  <button type="submit" class="dropdown-item px-0">Logout</button>
+                </form>
+              </li>
+            </ul>
+          </li>
         {% else %}
-          <span class="avatar-ph me-2">{{ user.username|default:user.email|slice:":1"|upper }}</span>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="authMenu"
+               role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Account
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="authMenu">
+              <li><a class="dropdown-item" href="{% url 'account_login' %}">Login</a></li>
+              <li><a class="dropdown-item" href="{% url 'account_signup' %}">Create account</a></li>
+            </ul>
+          </li>
         {% endif %}
-        <span class="d-none d-sm-inline">{{ user.username|default:user.email }}</span>
-      </a>
-      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileMenu">
-        <li><a class="dropdown-item" href="{% url 'users:my_profile' %}">My Profile</a></li>
-        <li><a class="dropdown-item" href="{% url 'posts:user_posts' %}">My Posts</a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li>
-          <form method="post" action="{% url 'account_logout' %}" class="px-3 py-1">
-            {% csrf_token %}
-            <button type="submit" class="dropdown-item px-0">Logout</button>
-          </form>
-        </li>
       </ul>
-    </li>
-  {% else %}
-    <li class="nav-item dropdown">
-      <a class="nav-link dropdown-toggle" href="#" id="authMenu"
-         role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        Account
-      </a>
-      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="authMenu">
-        <li><a class="dropdown-item" href="{% url 'account_login' %}">Login</a></li>
-        <li><a class="dropdown-item" href="{% url 'account_signup' %}">Create account</a></li>
-      </ul>
-    </li>
-  {% endif %}
-</ul>
 
     </div>
   </div>
 </nav>
 
 <style>
-  .avatar-ph {
-    width: 28px; height: 28px; display: inline-flex;
-    align-items: center; justify-content: center;
-    border-radius: 50%; background: #e9ecef; color: #6c757d;
-    font-weight: 600; font-size: 0.9rem; text-transform: uppercase;
-  }
-</style>
+.navbar-custom {
+  background: rgba(255, 255, 255, 0.72); /* полупрозрачный белый — можно изменить alpha */
+  backdrop-filter: blur(6px);            /* лёгкий размытие фона (необязательно) */
+  -webkit-backdrop-filter: blur(6px);
+  min-height: 72px;                      /* общая высота навбара */
+  padding-top: 0.65rem;
+  padding-bottom: 0.65rem;
+}
 
+.navbar-custom .navbar-brand {
+  font-size: 1.45rem;
+  letter-spacing: 0.4px;
+}
+
+.navbar-custom .nav-link {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  padding-left: 0.6rem;
+  padding-right: 0.6rem;
+  font-weight: 600;
+  font-size: 0.98rem;
+}
+
+.navbar-avatar {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+}
+
+.avatar-ph {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(233, 236, 239, 0.9);
+  color: #495057;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.navbar-username {
+  font-weight: 600;
+  margin-right: 0.25rem;
+}
+
+@media (max-width: 576px) {
+  .navbar-custom {
+    min-height: 60px;
+    padding-top: 0.45rem;
+    padding-bottom: 0.45rem;
+  }
+  .avatar-ph, .navbar-avatar { width: 30px; height: 30px; }
+}
+
+.navbar-custom .dropdown-menu {
+  background: #fff;
+  opacity: 1;
+}
+
+.navbar-custom.scrolled {
+  box-shadow: 0 6px 18px rgba(20, 20, 20, 0.06);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+</style>

@@ -3,6 +3,7 @@ from apps.posts.models import Post
 from django.urls import reverse_lazy
 from utils.posts_utils import AuthorRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django import forms
 
 
 
@@ -30,3 +31,9 @@ class PostDeleteView(LoginRequiredMixin, AuthorRequiredMixin, DeleteView):
     model = Post
     template_name = "apps/posts/post_confirm_delete.html"
     success_url = reverse_lazy("posts:list")
+
+
+
+
+class SearchForm(forms.Form):
+    q = forms.CharField(required=False, max_length=120)

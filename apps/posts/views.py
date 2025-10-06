@@ -7,16 +7,17 @@ from django.views.generic import ListView, DetailView
 from django.http import Http404
 from .models import Post
 from apps.likes.models import Like
-from ..comments.forms import CommentForm
+from django.db.models import Q
+
 
 
 class PostListView(ListView):
     """
-    List all active posts with pagination.
-
-    Context additions:
+    List all active posts with pagination and optional search (?q=...).
+    Context provides:
       - liked_post_ids: set of post PKs liked by the current user (if authenticated)
       - no_posts, empty_message preserved as before
+      - q: current search query
     """
     model = Post
     template_name = "apps/posts/posts_list.html"
@@ -24,11 +25,20 @@ class PostListView(ListView):
     paginate_by = 9
 
     def get_queryset(self):
-        return (
+        qs = (
             Post.objects.filter(is_active=True)
             .select_related("user")
             .order_by("-created_at")
         )
+
+        q = self.request.GET.get('q', '')
+        if q:
+            q = q.strip()
+            qs = qs.filter(
+                Q(title__icontains=q) |
+                Q(text__icontains=q)
+            )
+        return qs
 
     def paginate_queryset(self, queryset, page_size):
         paginator = Paginator(queryset, page_size)
@@ -61,7 +71,10 @@ class PostListView(ListView):
                 liked_qs = Like.objects.filter(user=user, post_id__in=post_pks).values_list("post_id", flat=True)
                 ctx["liked_post_ids"] = set(liked_qs)
 
+        ctx["q"] = self.request.GET.get('q', '').strip()
+
         return ctx
+
 
 
 class PostDetailView(DetailView):
@@ -132,6 +145,7 @@ class PostDetailView(DetailView):
             _annotate_comment(c)
 
         return ctx
+
 
 
 class UserPostsView(LoginRequiredMixin, ListView):

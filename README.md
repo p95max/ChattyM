@@ -9,19 +9,28 @@ It demonstrates core web development skills: authentication, user profiles, cont
   - Custom user model with email login
   - Registration, login, logout
   - Email confirmation & password reset (via console in dev)
+
 - 📄 **User Profiles**
   - Editable profile with avatar, birthday, description
   - Profile creation date tracking
+
 - 📝 **Content**
   - Create, edit, and delete posts
   - Comment system
   - Likes
+
 - 🔔 **Subscriptions**
   - Follow/unfollow users
   - Personalized feed with posts from subscriptions
 - ⚙️ **Admin**
   - Manage users, posts, comments
   - Basic moderation
+
+- 🔎 Search
+  - Search posts by **title** and **text** (case-insensitive).
+  - Compact search field placed in the navbar next to the user menu.   
+  - Notes: limit query length (e.g. 120 chars); use full-text search (Postgres/Elastic) for large datasets.
+
 - 🔌 **REST API**
   - DRF-based endpoints for:
     - Users & profiles

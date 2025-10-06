@@ -11,79 +11,90 @@
     <div class="collapse navbar-collapse" id="navbarNav">
 
       <!-- nav menu -->
-      <ul class="navbar-nav me-auto">
-      {% url 'core:main' as main_url %}
-      {% if request.path != main_url %}
-        <li class="nav-item">
-          <a class="nav-link {% if request.resolver_match.url_name == 'main' %}active{% endif %}"
-             href="{% url 'core:main' %}">
-            Home
-          </a>
-        </li>
-      {% endif %}
-      {% url 'posts:list' as main_url %}
-      {% if request.path != main_url %}
-        <li class="nav-item">
-          <a class="nav-link {% if request.resolver_match.url_name == 'list' %}active{% endif %}"
-             href="{% url 'posts:list' %}">
-            Recent Posts
-          </a>
-        </li>
-      {% endif %}
-      {% url 'posts:user_posts' as main_url %}
-      {% if request.path != main_url %}
-       {% if user.is_authenticated %}
-        <li class="nav-item">
-          <a class="nav-link {% if request.resolver_match.url_name == 'user_posts' %}active{% endif %}"
-             href="{% url 'posts:user_posts' %}">
-            My Posts
-          </a>
-        </li>
-      {% endif %}
-      {% endif %}
-      </ul>
+    <!-- nav menu (лево) -->
+<ul class="navbar-nav me-auto">
+  {% url 'core:main' as main_url %}
+  {% if request.path != main_url %}
+    <li class="nav-item">
+      <a class="nav-link {% if request.resolver_match.url_name == 'main' %}active{% endif %}"
+         href="{% url 'core:main' %}">Home</a>
+    </li>
+  {% endif %}
 
-    {% include "includes/search_form.html" %}
+  {% url 'posts:list' as main_url %}
+  {% if request.path != main_url %}
+    <li class="nav-item">
+      <a class="nav-link {% if request.resolver_match.url_name == 'list' %}active{% endif %}"
+         href="{% url 'posts:list' %}">Recent Posts</a>
+    </li>
+  {% endif %}
 
-      <!-- user menu -->
-      <ul class="navbar-nav ms-auto">
-        {% if user.is_authenticated %}
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileMenu"
-               role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              {% if user.avatar %}
-                <img src="{{ user.avatar.url }}" alt="avatar"
-                     class="rounded-circle me-2 navbar-avatar">
-              {% else %}
-                <span class="avatar-ph me-2">{{ user.username|default:user.email|slice:":1"|upper }}</span>
-              {% endif %}
-              <span class="d-none d-sm-inline navbar-username">{{ user.username|default:user.email }}</span>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileMenu">
-              <li><a class="dropdown-item" href="{% url 'users:my_profile' %}">My Profile</a></li>
-              <li><a class="dropdown-item" href="{% url 'posts:user_posts' %}">My Posts</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li>
-                <form method="post" action="{% url 'account_logout' %}" class="px-3 py-1">
-                  {% csrf_token %}
-                  <button type="submit" class="dropdown-item px-0">Logout</button>
-                </form>
-              </li>
-            </ul>
+  {% url 'posts:user_posts' as main_url %}
+  {% if request.path != main_url and user.is_authenticated %}
+    <li class="nav-item">
+      <a class="nav-link {% if request.resolver_match.url_name == 'user_posts' %}active{% endif %}"
+         href="{% url 'posts:user_posts' %}">My Posts</a>
+    </li>
+  {% endif %}
+</ul>
+
+{# правый контейнер — сначала форма, потом user menu; контейнер отталкивается в правую сторону ms-auto #}
+<div class="d-flex align-items-center ms-auto gap-2">
+
+  {# --- компактная форма поиска (встанет вплотную к профилю) --- #}
+  <form class="d-flex align-items-center search-inline" role="search" method="get" action="{% url 'posts:list' %}">
+    <label for="nav-search" class="visually-hidden">Search posts</label>
+    <input id="nav-search"
+           name="q"
+           class="form-control form-control-sm me-1"
+           type="search"
+           placeholder="Search..."
+           aria-label="Search posts"
+           value="{{ request.GET.q|default_if_none:'' }}">
+    <button class="btn btn-outline-primary btn-sm" type="submit" aria-label="Submit search">
+      <i class="bi bi-search"></i>
+    </button>
+  </form>
+
+  {# --- user menu (убрали ms-auto, теперь стоит рядом с формой) --- #}
+  <ul class="navbar-nav ms-0">
+    {% if user.is_authenticated %}
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileMenu"
+           role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          {% if user.avatar %}
+            <img src="{{ user.avatar.url }}" alt="avatar" class="rounded-circle me-2 navbar-avatar">
+          {% else %}
+            <span class="avatar-ph me-2">{{ user.username|default:user.email|slice:":1"|upper }}</span>
+          {% endif %}
+          <span class="d-none d-sm-inline navbar-username">{{ user.username|default:user.email }}</span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileMenu">
+          <li><a class="dropdown-item" href="{% url 'users:my_profile' %}">My Profile</a></li>
+          <li><a class="dropdown-item" href="{% url 'posts:user_posts' %}">My Posts</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <form method="post" action="{% url 'account_logout' %}" class="px-3 py-1">
+              {% csrf_token %}
+              <button type="submit" class="dropdown-item px-0">Logout</button>
+            </form>
           </li>
-        {% else %}
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="authMenu"
-               role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Account
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="authMenu">
-              <li><a class="dropdown-item" href="{% url 'account_login' %}">Login</a></li>
-              <li><a class="dropdown-item" href="{% url 'account_signup' %}">Create account</a></li>
-            </ul>
-          </li>
-        {% endif %}
-      </ul>
+        </ul>
+      </li>
+    {% else %}
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="authMenu"
+           role="button" data-bs-toggle="dropdown" aria-expanded="false">Account</a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="authMenu">
+          <li><a class="dropdown-item" href="{% url 'account_login' %}">Login</a></li>
+          <li><a class="dropdown-item" href="{% url 'account_signup' %}">Create account</a></li>
+        </ul>
+      </li>
+    {% endif %}
+  </ul>
+
+</div> <!-- .d-flex ms-auto -->
+
 
     </div>
   </div>

@@ -10,7 +10,7 @@ class Post(models.Model):
     )
     title = models.CharField(max_length=100)
     text = models.TextField(max_length=2500)
-    image = models.ImageField(null=True, blank=True, upload_to='posts/images/')
+    image = models.ImageField(null=True, blank=True, upload_to='posts/img/')
     likes_count = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

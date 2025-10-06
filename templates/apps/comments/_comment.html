@@ -1,0 +1,51 @@
+<div id="comment-{{ comment.pk }}" class="mb-3 d-flex">
+  <div class="me-2">
+    <img
+      src="{{ comment.avatar_url }}"
+      alt="{{ comment.user.username|default:'user' }}"
+      class="rounded-circle"
+      width="40"
+      height="40"
+      onerror="this.onerror=null; this.src='{{ comment.avatar_url }}';"
+    />
+  </div>
+
+  <div class="flex-grow-1">
+    <div class="d-flex align-items-center">
+      <strong class="me-2">{{ comment.user.get_full_name|default:comment.user.username }}</strong>
+      <small class="text-muted">{{ comment.created_at|date:"SHORT_DATETIME_FORMAT" }}</small>
+      {% if comment.updated_at %}
+        <small class="text-muted ms-2">(edited)</small>
+      {% endif %}
+    </div>
+
+    <div class="mt-1">
+      {% if comment.is_active %}
+        <p class="mb-1">{{ comment.content|linebreaksbr }}</p>
+      {% else %}
+        <em class="text-muted">Comment removed by user or moderator.</em>
+      {% endif %}
+    </div>
+
+    <div class="small text-muted d-flex gap-2">
+      {% if user.is_authenticated %}
+        <a href="#" class="reply-link" data-parent="{{ comment.pk }}" data-post="{{ comment.post.pk }}">Reply</a>
+        {% if user == comment.user or user.is_staff %}
+          <a href="{% url 'comments:edit' comment.pk %}">Edit</a>
+          <form action="{% url 'comments:delete' comment.pk %}" method="post" class="d-inline-block ms-1">
+            {% csrf_token %}
+            <button class="btn btn-link p-0" type="submit">Delete</button>
+          </form>
+        {% endif %}
+      {% endif %}
+    </div>
+
+    {% if comment.replies.all %}
+      <div class="mt-2 ps-4">
+        {% for reply in comment.replies.all %}
+          {% include "apps/comments/_comment.html" with comment=reply %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</div>

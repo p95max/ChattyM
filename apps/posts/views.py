@@ -2,10 +2,12 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.templatetags.static import static
 from django.views.generic import ListView, DetailView
 from django.http import Http404
 from .models import Post
 from apps.likes.models import Like
+from ..comments.forms import CommentForm
 
 
 class PostListView(ListView):
@@ -64,10 +66,14 @@ class PostListView(ListView):
 
 class PostDetailView(DetailView):
     """
-    Show a single post detail.
+    Display a single post with comment form and comment list context.
 
-    Context additions:
-      - user_liked: boolean, whether current user liked this post
+    Context provided:
+      - post (from DetailView)
+      - user_liked: bool
+      - form: CommentForm() instance for posting new comments
+      - comments_count: int (count of active comments)
+      - root_comments: queryset of top-level active comments (prefetched replies)
     """
     model = Post
     template_name = "apps/posts/post_detail.html"
@@ -84,16 +90,47 @@ class PostDetailView(DetailView):
             return redirect("posts:list")
 
     def get_context_data(self, **kwargs):
-        """
-        Add `user_liked` boolean to template context so template can render like button
-        without calling model/query methods directly.
-        """
         ctx = super().get_context_data(**kwargs)
         user = self.request.user
         post = self.object
+
         ctx["user_liked"] = False
         if user.is_authenticated:
             ctx["user_liked"] = Like.objects.filter(user=user, post=post).exists()
+
+        from apps.comments.forms import CommentForm  #
+        ctx["form"] = CommentForm()
+
+        ctx["comments_count"] = post.comments.filter(is_active=True).count()
+
+        ctx["root_comments"] = (
+            post.comments
+            .filter(parent__isnull=True, is_active=True)
+            .select_related("user")
+            .prefetch_related("replies__user", "replies__replies")
+        )
+
+        def _avatar_for_user(u):
+            try:
+                return u.profile.avatar.url
+            except Exception:
+                return static('images/avatars/default.png')
+
+        def _annotate_comment(cmt):
+
+            try:
+                cmt.avatar_url = _avatar_for_user(cmt.user)
+            except Exception:
+                cmt.avatar_url = static('images/avatars/default.png')
+            try:
+                for r in cmt.replies.all():
+                    _annotate_comment(r)
+            except Exception:
+                pass
+
+        for c in ctx["root_comments"]:
+            _annotate_comment(c)
+
         return ctx
 
 

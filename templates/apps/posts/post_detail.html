@@ -2,8 +2,8 @@
 {% load static %}
 
 {% block title %}{{ post.title }} | {{ block.super }}{% endblock %}
-{% block content %}
 
+{% block content %}
 <div class="card shadow-sm mx-auto" style="max-width: 1780px;">
   {% if post.image %}
     <div class="text-center mt-3">
@@ -21,15 +21,18 @@
     <!-- fullscreen img -->
     <div class="modal fade" id="fullscreenImageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-fullscreen">
-        <div class="modal-content bg-dark border-0">
+        <div class="modal-content bg-dark border-0 position-relative">
           <div class="modal-body p-0 d-flex align-items-center justify-content-center">
             <img src="{{ post.image.url }}"
                  alt="{{ post.title }}"
                  class="img-fluid rounded shadow-lg"
                  style="max-height: 100vh; object-fit: contain;">
           </div>
-          <button type="button" class="btn btn-light position-absolute top-0 end-0 m-3"
-                  data-bs-dismiss="modal">✕</button>
+
+          <button type="button"
+                  class="btn btn-light position-absolute close-fullscreen"
+                  data-bs-dismiss="modal"
+                  aria-label="Close">✕</button>
         </div>
       </div>
     </div>
@@ -40,14 +43,13 @@
     <p class="text-muted small text-center mb-3">
       by {{ post.user.username|default:post.user.email }} • {{ post.created_at|date:"M d, Y H:i" }}
     </p>
+
     <p class="card-text">{{ post.text|linebreaks }}</p>
 
-    {#Like button#}
-    <div class="d-flex justify-content-between mt-4">
+    <div class="d-flex justify-content-between align-items-center mt-4">
       <div>
-            {% include "includes/like_button.html" with post=post %}
+        {% include "apps/likes/like_button.html" with post=post %}
       </div>
-
 
       {% if user == post.user %}
         <div>
@@ -59,8 +61,115 @@
   </div>
 </div>
 
+<div class="container mt-4">
+  {% include "apps/comments/comment_list.html" with post=post form=form %}
+</div>
+
 <div class="text-center mt-3">
   <a href="{% url 'posts:list' %}" class="btn btn-link">← Back to posts</a>
 </div>
-
 {% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<style>
+  /* Убедимся, что модалка и её backdrop находятся выше всех */
+  /* Очень большой z-index только для этого модала — чтобы точно перекрыть всё */
+  #fullscreenImageModal {
+    z-index: 20050 !important;
+  }
+  #fullscreenImageModal .modal-dialog {
+    z-index: 20060 !important;
+  }
+  #fullscreenImageModal .modal-content {
+    z-index: 20070 !important;
+    pointer-events: auto !important; /* важное: разрешаем клики внутри модалки */
+  }
+
+  /* backdrop чуть ниже модалки, но выше всего остального */
+  .modal-backdrop.fullscreen-fix {
+    z-index: 20040 !important;
+    pointer-events: auto;
+  }
+
+  /* Кнопка закрытия — наверху модалки */
+  #fullscreenImageModal .close-fullscreen {
+    position: fixed; /* фиксируем относительно viewport, чтобы не зависеть от stacking-context'а */
+    bottom: 20px;
+    right: 20px;
+    z-index: 20080 !important;
+    pointer-events: auto !important;
+    box-shadow: 0 .25rem .5rem rgba(0,0,0,.25);
+    border-radius: .5rem;
+    padding: .4rem .6rem;
+    background: rgba(255,255,255,0.95);
+  }
+
+  /* небольшая адаптивность */
+  @media (max-width: 576px) {
+    #fullscreenImageModal .close-fullscreen {
+      right: 12px;
+      bottom: 12px;
+    }
+  }
+
+  /* оставляем navbar нормальным — не трогаем структуру */
+  .navbar { position: relative; z-index: 3000 !important; }
+  .navbar .dropdown-menu, .dropdown-menu.show { z-index: 3100 !important; }
+</style>
+{% endblock extra_css %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+(function(){
+  if (!window.bootstrap) return;
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var modalEl = document.getElementById('fullscreenImageModal');
+    if (!modalEl) return;
+
+    // 1) Перемещаем модал в body — это убирает проблемы со stacking context
+    if (modalEl.parentElement !== document.body) {
+      document.body.appendChild(modalEl);
+    }
+
+    // 2) Оборачиваем backdrop созданный bootstrap, даём особый класс, чтобы управлять z-index
+    //    (при открытии bootstrap автоматически добавляет backdrop; мы сохраним ссылку при show)
+    modalEl.addEventListener('show.bs.modal', function (ev) {
+      // немного отложим, чтобы backdrop уже был вставлен
+      setTimeout(function () {
+        var backdrops = document.querySelectorAll('.modal-backdrop');
+        if (backdrops.length) {
+          // возьмём последний (тот, что был вставлен последним)
+          var last = backdrops[backdrops.length - 1];
+          last.classList.add('fullscreen-fix');
+        }
+      }, 0);
+    });
+
+    // 3) Явный обработчик кнопки закрытия (страховка)
+    var btn = document.querySelector('#fullscreenImageModal .close-fullscreen');
+    if (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var inst = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+        inst.hide();
+      });
+      // также убедимся, что кнопка кликабельна
+      btn.style.pointerEvents = 'auto';
+    }
+
+    // 4) Убираем лишние классы dropdown-open при открытии модалки, чтобы не мешать
+    modalEl.addEventListener('show.bs.modal', function () {
+      document.body.classList.remove('dropdown-open');
+      document.body.classList.add('modal-open'); // bootstrap обычно добавляет, но на всякий
+    });
+    modalEl.addEventListener('hidden.bs.modal', function () {
+      document.body.classList.remove('modal-open');
+    });
+  });
+})();
+</script>
+{% endblock scripts %}
+

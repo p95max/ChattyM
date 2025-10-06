@@ -6,10 +6,10 @@
 {% block content %}
 
 <div class="card shadow-sm mx-auto" style="max-width: 1780px;">
-          <h1 class="card-title text-center">{{ post.title }}</h1>
+  <h1 class="card-title text-center">{{ post.title }}</h1>
+
   {% if post.image %}
     <div class="text-center mt-3">
-      <!-- mini img -->
       <img src="{{ post.image.url }}"
            alt="{{ post.title }}"
            class="rounded shadow-sm"
@@ -19,39 +19,18 @@
            data-bs-toggle="modal"
            data-bs-target="#fullscreenImageModal">
     </div>
-
-    <!-- fullscreen img -->
-    <div class="modal fade" id="fullscreenImageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-fullscreen">
-        <div class="modal-content bg-dark border-0 position-relative">
-          <div class="modal-body p-0 d-flex align-items-center justify-content-center">
-            <img src="{{ post.image.url }}"
-                 alt="{{ post.title }}"
-                 class="img-fluid rounded shadow-lg"
-                 style="max-height: 100vh; object-fit: contain;">
-          </div>
-
-          <button type="button"
-                  class="btn btn-light position-absolute close-fullscreen"
-                  data-bs-dismiss="modal"
-                  aria-label="Close">✕</button>
-        </div>
-      </div>
-    </div>
   {% endif %}
 
   <div class="card-body">
-
     <div class="text-center text-muted small mb-3">
       <span class="me-2">by</span>
       <a href="{% url 'users:author_profile' post.user.username %}"
-         class="text-decoration-none fw-semibold text-blue">
+         class="text-decoration-none fw-semibold text-primary">
         {{ post.user.get_full_name|default:post.user.username|default:post.user.email }}
       </a>
       <span class="mx-2">&bull;</span>
       <span>{{ post.created_at|date:"d.m.Y H:i" }}</span>
     </div>
-
 
     <p class="card-text">{{ post.text|linebreaks }}</p>
 
@@ -67,6 +46,15 @@
         </div>
       {% endif %}
     </div>
+
+ {% if post.tags.all %}
+  <div class="post-tags mt-3">
+    {% for tag in post.tags.all %}
+     <a href="{% url 'posts:by_tag' tag.name|lower|urlencode %}">#{{ tag.name }}</a>
+    {% endfor %}
+  </div>
+{% endif %}
+
   </div>
 </div>
 
@@ -77,56 +65,82 @@
 <div class="text-center mt-3">
   <a href="{% url 'posts:list' %}" class="btn btn-link">← Back to posts</a>
 </div>
+
+{% if post.image %}
+  <div class="modal fade" id="fullscreenImageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+      <div class="modal-content bg-dark border-0 position-relative">
+        <div class="modal-body p-0 d-flex align-items-center justify-content-center">
+          <img src="{{ post.image.url }}"
+               alt="{{ post.title }}"
+               class="img-fluid rounded shadow-lg"
+               style="max-height: 100vh; object-fit: contain;">
+        </div>
+      </div>
+    </div>
+
+    <button type="button"
+            class="btn btn-light close-fullscreen"
+            data-bs-dismiss="modal"
+            aria-label="Close">✕</button>
+  </div>
+{% endif %}
+
 {% endblock %}
+
 
 {% block extra_css %}
 {{ block.super }}
 <style>
-  /* Убедимся, что модалка и её backdrop находятся выше всех */
-  /* Очень большой z-index только для этого модала — чтобы точно перекрыть всё */
-  #fullscreenImageModal {
-    z-index: 20050 !important;
-  }
-  #fullscreenImageModal .modal-dialog {
-    z-index: 20060 !important;
-  }
-  #fullscreenImageModal .modal-content {
-    z-index: 20070 !important;
-    pointer-events: auto !important; /* важное: разрешаем клики внутри модалки */
-  }
+  .modal-backdrop.fullscreen-fix { z-index: 1050 !important; }
+  #fullscreenImageModal { z-index: 1060 !important; }
+  #fullscreenImageModal .modal-dialog { z-index: 1061 !important; }
+  #fullscreenImageModal .modal-content { z-index: 1062 !important; pointer-events:auto; }
 
-  /* backdrop чуть ниже модалки, но выше всего остального */
-  .modal-backdrop.fullscreen-fix {
-    z-index: 20040 !important;
-    pointer-events: auto;
-  }
 
-  /* Кнопка закрытия — наверху модалки */
-  #fullscreenImageModal .close-fullscreen {
-    position: fixed; /* фиксируем относительно viewport, чтобы не зависеть от stacking-context'а */
+  .close-fullscreen {
+    position: fixed;
     bottom: 20px;
     right: 20px;
-    z-index: 20080 !important;
+    z-index: 1070 !important;
     pointer-events: auto !important;
     box-shadow: 0 .25rem .5rem rgba(0,0,0,.25);
     border-radius: .5rem;
     padding: .4rem .6rem;
     background: rgba(255,255,255,0.95);
+    border: 0;
   }
 
-  /* небольшая адаптивность */
   @media (max-width: 576px) {
-    #fullscreenImageModal .close-fullscreen {
+    .close-fullscreen {
       right: 12px;
       bottom: 12px;
     }
   }
 
-  /* оставляем navbar нормальным — не трогаем структуру */
-  .navbar { position: relative; z-index: 3000 !important; }
-  .navbar .dropdown-menu, .dropdown-menu.show { z-index: 3100 !important; }
+  .navbar { position: relative; z-index: 1000 !important; }
+  .navbar .dropdown-menu, .dropdown-menu.show { z-index: 1100 !important; }
+
+    .post-tags .badge {
+      font-size: 1rem;
+      font-weight: 700;
+      padding: .35rem .6rem;
+      border-radius: .5rem;
+      line-height: 1;
+      display: inline-block;
+    }
+    .post-tags .badge:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      text-decoration: none;
+    }
+    .post-tags .badge.bg-primary {
+      background: var(--bs-primary);
+      color: #fff;
+    }
 </style>
-{% endblock extra_css %}
+{% endblock %}
+
 
 {% block scripts %}
 {{ block.super }}
@@ -137,48 +151,24 @@
   document.addEventListener('DOMContentLoaded', function () {
     var modalEl = document.getElementById('fullscreenImageModal');
     if (!modalEl) return;
-
-    // 1) Перемещаем модал в body — это убирает проблемы со stacking context
-    if (modalEl.parentElement !== document.body) {
-      document.body.appendChild(modalEl);
-    }
-
-    // 2) Оборачиваем backdrop созданный bootstrap, даём особый класс, чтобы управлять z-index
-    //    (при открытии bootstrap автоматически добавляет backdrop; мы сохраним ссылку при show)
-    modalEl.addEventListener('show.bs.modal', function (ev) {
-      // немного отложим, чтобы backdrop уже был вставлен
+    modalEl.addEventListener('show.bs.modal', function () {
       setTimeout(function () {
         var backdrops = document.querySelectorAll('.modal-backdrop');
         if (backdrops.length) {
-          // возьмём последний (тот, что был вставлен последним)
-          var last = backdrops[backdrops.length - 1];
-          last.classList.add('fullscreen-fix');
+          backdrops[backdrops.length - 1].classList.add('fullscreen-fix');
         }
       }, 0);
+      document.body.classList.remove('dropdown-open');
     });
 
-    // 3) Явный обработчик кнопки закрытия (страховка)
-    var btn = document.querySelector('#fullscreenImageModal .close-fullscreen');
+    var btn = document.querySelector('#fullscreenImageModal + .close-fullscreen, #fullscreenImageModal .close-fullscreen');
     if (btn) {
       btn.addEventListener('click', function (e) {
-        e.stopPropagation();
         var inst = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
         inst.hide();
       });
-      // также убедимся, что кнопка кликабельна
-      btn.style.pointerEvents = 'auto';
     }
-
-    // 4) Убираем лишние классы dropdown-open при открытии модалки, чтобы не мешать
-    modalEl.addEventListener('show.bs.modal', function () {
-      document.body.classList.remove('dropdown-open');
-      document.body.classList.add('modal-open'); // bootstrap обычно добавляет, но на всякий
-    });
-    modalEl.addEventListener('hidden.bs.modal', function () {
-      document.body.classList.remove('modal-open');
-    });
   });
 })();
 </script>
-{% endblock scripts %}
-
+{% endblock %}

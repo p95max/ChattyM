@@ -16,5 +16,58 @@
   {"model":"posts.post","pk":15,"fields":{"user":1,"title":"City rain","text":"Shot through the window on a rainy evening.","image":"posts/images/rain_city.jpg","likes_count":4,"is_active":true,"created_at":"2025-10-04T11:05:59+02:00","updated_at":"2025-10-04T11:05:59+02:00"}},
   {"model":"posts.post","pk":16,"fields":{"user":3,"title":"Sketchbook update","text":"Practicing faces and shadows.","image":null,"likes_count":2,"is_active":true,"created_at":"2025-10-04T13:25:56+02:00","updated_at":"2025-10-04T13:25:56+02:00"}},
   {"model":"posts.post","pk":17,"fields":{"user":2,"title":"SpaceX launch","text":"Watched live from the stream!","image":"posts/images/spacex.jpg","likes_count":9,"is_active":true,"created_at":"2025-10-04T18:40:12+02:00","updated_at":"2025-10-04T18:40:12+02:00"}},
-  {"model":"posts.post","pk":18,"fields":{"user":4,"title":"Coding marathon","text":"Django, coffee, repeat.","image":null,"likes_count":5,"is_active":true,"created_at":"2025-10-04T21:50:56+02:00","updated_at":"2025-10-04T21:50:56+02:00"}}
+  {"model":"posts.post","pk":18,"fields":{"user":4,"title":"Coding marathon","text":"Django, coffee, repeat.","image":null,"likes_count":5,"is_active":true,"created_at":"2025-10-04T21:50:56+02:00","updated_at":"2025-10-04T21:50:56+02:00"}},
+
+  {"model":"taggit.tag","pk":1,"fields":{"name":"sunrise","slug":"sunrise"}},
+  {"model":"taggit.tag","pk":2,"fields":{"name":"berlin","slug":"berlin"}},
+  {"model":"taggit.tag","pk":3,"fields":{"name":"city","slug":"city"}},
+  {"model":"taggit.tag","pk":4,"fields":{"name":"coffee","slug":"coffee"}},
+  {"model":"taggit.tag","pk":5,"fields":{"name":"cafe","slug":"cafe"}},
+  {"model":"taggit.tag","pk":6,"fields":{"name":"munich","slug":"munich"}},
+  {"model":"taggit.tag","pk":7,"fields":{"name":"travel","slug":"travel"}},
+  {"model":"taggit.tag","pk":8,"fields":{"name":"coding","slug":"coding"}},
+  {"model":"taggit.tag","pk":9,"fields":{"name":"hiking","slug":"hiking"}},
+  {"model":"taggit.tag","pk":10,"fields":{"name":"alps","slug":"alps"}},
+  {"model":"taggit.tag","pk":11,"fields":{"name":"jogging","slug":"jogging"}},
+  {"model":"taggit.tag","pk":12,"fields":{"name":"workspace","slug":"workspace"}},
+  {"model":"taggit.tag","pk":13,"fields":{"name":"guitar","slug":"guitar"}},
+  {"model":"taggit.tag","pk":14,"fields":{"name":"lazy","slug":"lazy"}},
+  {"model":"taggit.tag","pk":15,"fields":{"name":"motorcycle","slug":"motorcycle"}},
+  {"model":"taggit.tag","pk":16,"fields":{"name":"lake","slug":"lake"}},
+  {"model":"taggit.tag","pk":17,"fields":{"name":"vintage","slug":"vintage"}},
+  {"model":"taggit.tag","pk":18,"fields":{"name":"rain","slug":"rain"}},
+  {"model":"taggit.tag","pk":19,"fields":{"name":"it","slug":"it"}},
+  {"model":"taggit.tag","pk":20,"fields":{"name":"spacex","slug":"spacex"}},
+  {"model":"taggit.tag","pk":21,"fields":{"name":"django","slug":"django"}},
+  {"model":"taggit.tag","pk":22,"fields":{"name":"sketch","slug":"sketch"}},
+
+  {"model":"taggit.taggeditem","pk":1,"fields":{"tag":1,"content_type":["posts","post"],"object_id":1}},
+  {"model":"taggit.taggeditem","pk":2,"fields":{"tag":2,"content_type":["posts","post"],"object_id":1}},
+  {"model":"taggit.taggeditem","pk":3,"fields":{"tag":3,"content_type":["posts","post"],"object_id":1}},
+
+  {"model":"taggit.taggeditem","pk":4,"fields":{"tag":4,"content_type":["posts","post"],"object_id":2}},
+  {"model":"taggit.taggeditem","pk":5,"fields":{"tag":5,"content_type":["posts","post"],"object_id":2}},
+
+  {"model":"taggit.taggeditem","pk":6,"fields":{"tag":6,"content_type":["posts","post"],"object_id":3}},
+  {"model":"taggit.taggeditem","pk":7,"fields":{"tag":7,"content_type":["posts","post"],"object_id":3}},
+  {"model":"taggit.taggeditem","pk":8,"fields":{"tag":7,"content_type":["posts","post"],"object_id":5}},
+  {"model":"taggit.taggeditem","pk":9,"fields":{"tag":9,"content_type":["posts","post"],"object_id":5}},
+  {"model":"taggit.taggeditem","pk":10,"fields":{"tag":10,"content_type":["posts","post"],"object_id":5}},
+
+  {"model":"taggit.taggeditem","pk":11,"fields":{"tag":8,"content_type":["posts","post"],"object_id":4}},
+  {"model":"taggit.taggeditem","pk":12,"fields":{"tag":21,"content_type":["posts","post"],"object_id":18}},
+
+  {"model":"taggit.taggeditem","pk":13,"fields":{"tag":11,"content_type":["posts","post"],"object_id":7}},
+  {"model":"taggit.taggeditem","pk":14,"fields":{"tag":12,"content_type":["posts","post"],"object_id":8}},
+  {"model":"taggit.taggeditem","pk":15,"fields":{"tag":13,"content_type":["posts","post"],"object_id":9}},
+  {"model":"taggit.taggeditem","pk":16,"fields":{"tag":14,"content_type":["posts","post"],"object_id":10}},
+  {"model":"taggit.taggeditem","pk":17,"fields":{"tag":15,"content_type":["posts","post"],"object_id":11}},
+  {"model":"taggit.taggeditem","pk":18,"fields":{"tag":16,"content_type":["posts","post"],"object_id":12}},
+  {"model":"taggit.taggeditem","pk":19,"fields":{"tag":17,"content_type":["posts","post"],"object_id":14}},
+
+  {"model":"taggit.taggeditem","pk":20,"fields":{"tag":18,"content_type":["posts","post"],"object_id":15}},
+  {"model":"taggit.taggeditem","pk":21,"fields":{"tag":19,"content_type":["posts","post"],"object_id":15}},
+
+  {"model":"taggit.taggeditem","pk":22,"fields":{"tag":20,"content_type":["posts","post"],"object_id":17}},
+  {"model":"taggit.taggeditem","pk":23,"fields":{"tag":22,"content_type":["posts","post"],"object_id":16}}
 ]

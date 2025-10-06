@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.templatetags.static import static
 from django.views.generic import ListView, DetailView
@@ -8,17 +8,10 @@ from django.http import Http404
 from .models import Post
 from apps.likes.models import Like
 from django.db.models import Q
-
+from taggit.models import Tag
 
 
 class PostListView(ListView):
-    """
-    List all active posts with pagination and optional search (?q=...).
-    Context provides:
-      - liked_post_ids: set of post PKs liked by the current user (if authenticated)
-      - no_posts, empty_message preserved as before
-      - q: current search query
-    """
     model = Post
     template_name = "apps/posts/posts_list.html"
     context_object_name = "posts"
@@ -28,16 +21,19 @@ class PostListView(ListView):
         qs = (
             Post.objects.filter(is_active=True)
             .select_related("user")
+            .prefetch_related("tags")
             .order_by("-created_at")
         )
 
         q = self.request.GET.get('q', '')
         if q:
             q = q.strip()
-            qs = qs.filter(
-                Q(title__icontains=q) |
-                Q(text__icontains=q)
-            )
+            qs = qs.filter(Q(title__icontains=q) | Q(text__icontains=q))
+
+        tag = self.request.GET.get('tag')
+        if tag:
+            qs = qs.filter(tags__slug__iexact=tag)
+
         return qs
 
     def paginate_queryset(self, queryset, page_size):
@@ -51,10 +47,7 @@ class PostListView(ListView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-
-        object_list = getattr(self, "object_list", None)
-        if object_list is None:
-            object_list = ctx.get("object_list", None)
+        object_list = getattr(self, "object_list", None) or ctx.get("object_list", None)
 
         ctx["no_posts"] = (object_list is None) or (len(object_list) == 0)
         if ctx["no_posts"]:
@@ -72,28 +65,17 @@ class PostListView(ListView):
                 ctx["liked_post_ids"] = set(liked_qs)
 
         ctx["q"] = self.request.GET.get('q', '').strip()
-
+        ctx["tag"] = self.request.GET.get('tag', '').strip()
         return ctx
 
 
-
 class PostDetailView(DetailView):
-    """
-    Display a single post with comment form and comment list context.
-
-    Context provided:
-      - post (from DetailView)
-      - user_liked: bool
-      - form: CommentForm() instance for posting new comments
-      - comments_count: int (count of active comments)
-      - root_comments: queryset of top-level active comments (prefetched replies)
-    """
     model = Post
     template_name = "apps/posts/post_detail.html"
     context_object_name = "post"
 
     def get_queryset(self):
-        return Post.objects.filter(is_active=True).select_related("user")
+        return Post.objects.filter(is_active=True).select_related("user").prefetch_related("tags")
 
     def get(self, request, *args, **kwargs):
         try:
@@ -111,7 +93,7 @@ class PostDetailView(DetailView):
         if user.is_authenticated:
             ctx["user_liked"] = Like.objects.filter(user=user, post=post).exists()
 
-        from apps.comments.forms import CommentForm  #
+        from apps.comments.forms import CommentForm
         ctx["form"] = CommentForm()
 
         ctx["comments_count"] = post.comments.filter(is_active=True).count()
@@ -130,7 +112,6 @@ class PostDetailView(DetailView):
                 return static('images/avatars/default.png')
 
         def _annotate_comment(cmt):
-
             try:
                 cmt.avatar_url = _avatar_for_user(cmt.user)
             except Exception:
@@ -147,13 +128,7 @@ class PostDetailView(DetailView):
         return ctx
 
 
-
 class UserPostsView(LoginRequiredMixin, ListView):
-    """
-    List of posts created by the currently logged-in user.
-
-    Adds liked_post_ids to the context (for consistency with other lists).
-    """
     model = Post
     template_name = "apps/posts/user_posts.html"
     context_object_name = "posts"
@@ -161,12 +136,15 @@ class UserPostsView(LoginRequiredMixin, ListView):
     paginate_by = 9
 
     def get_queryset(self):
-        """Filter posts belonging to the current user only."""
-        return Post.objects.filter(user=self.request.user).order_by("-created_at")
+        return (
+            Post.objects.filter(user=self.request.user)
+            .select_related("user")
+            .prefetch_related("tags")
+            .order_by("-created_at")
+        )
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-
         object_list = getattr(self, "object_list", None) or ctx.get("object_list", None)
 
         user = self.request.user
@@ -180,4 +158,35 @@ class UserPostsView(LoginRequiredMixin, ListView):
                 liked_qs = Like.objects.filter(user=user, post_id__in=post_pks).values_list("post_id", flat=True)
                 ctx["liked_post_ids"] = set(liked_qs)
 
+        return ctx
+
+
+class TagPostListView(ListView):
+    template_name = 'apps/posts/posts_list.html'
+    context_object_name = 'posts'
+    paginate_by = 9
+
+    def get_queryset(self):
+        value = self.kwargs.get('slug', '').strip()
+        if not value:
+            return Post.objects.none()
+
+        tag_fields = [f.name for f in Tag._meta.get_fields()]
+        if 'slug' in tag_fields:
+            filter_kwargs = {'tags__slug__iexact': value}
+            self.tag = Tag.objects.filter(slug__iexact=value).first()
+        else:
+            filter_kwargs = {'tags__name__iexact': value}
+            self.tag = Tag.objects.filter(name__iexact=value).first()
+
+        return (
+            Post.objects.filter(is_active=True, **filter_kwargs)
+                        .select_related('user')
+                        .prefetch_related('tags')
+                        .order_by('-created_at')
+        )
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['tag'] = self.tag or self.kwargs.get('slug')
         return ctx

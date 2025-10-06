@@ -10,10 +10,6 @@ from apps.posts.models import Post
 
 
 class AddCommentView(LoginRequiredMixin, CreateView):
-    """
-    Create a new comment for a post. Supports AJAX (returns rendered html snippet).
-    URL: /comments/add/<post_pk>/
-    """
     model = Comment
     form_class = CommentForm
 
@@ -28,10 +24,12 @@ class AddCommentView(LoginRequiredMixin, CreateView):
         comment.save()
 
         if self.request.headers.get("x-requested-with") == "XMLHttpRequest":
-            html = render_to_string("apps/comments/_comment.html", {"comment": comment, "user": self.request.user}, request=self.request)
+            html = render_to_string("apps/comments/_comment.html",
+                                    {"comment": comment, "user": self.request.user},
+                                    request=self.request)
             return JsonResponse({"status": "ok", "html": html, "comment_id": comment.pk})
-
-        return redirect(self.post_obj.get_absolute_url() if hasattr(self.post_obj, "get_absolute_url") else reverse_lazy("posts:detail", args=[self.post_obj.pk]))
+        return redirect(self.post_obj.get_absolute_url() if hasattr(self.post_obj, "get_absolute_url")
+                        else reverse_lazy("posts:detail", args=[self.post_obj.pk]))
 
     def form_invalid(self, form):
         if self.request.headers.get("x-requested-with") == "XMLHttpRequest":
@@ -40,48 +38,54 @@ class AddCommentView(LoginRequiredMixin, CreateView):
 
 
 class EditCommentView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    """
-    Edit comment. Only author or staff can edit.
-    Supports AJAX (returns updated rendered comment html).
-    URL: /comments/edit/<pk>/
-    """
     model = Comment
     form_class = CommentForm
     template_name = "apps/comments/comment_form.html"
 
     def test_func(self):
         obj = self.get_object()
-        return self.request.user == obj.user or self.request.user.is_staff
+        return (self.request.user == obj.user) or self.request.user.is_staff
+
+    def handle_no_permission(self):
+        if self.request.headers.get("x-requested-with") == "XMLHttpRequest":
+            return JsonResponse({"status": "error", "detail": "forbidden"}, status=403)
+        return HttpResponseForbidden("You don't have permission to edit this comment.")
 
     def form_valid(self, form):
-        comment = form.save()
-        comment.mark_edited()
-
+        comment = form.save(commit=False)
+        if not ((self.request.user == comment.user) or self.request.user.is_staff):
+            return self.handle_no_permission()
+        if hasattr(comment, "mark_edited"):
+            comment.mark_edited()
+        comment.save()
         if self.request.headers.get("x-requested-with") == "XMLHttpRequest":
-            html = render_to_string("apps/comments/_comment.html", {"comment": comment, "user": self.request.user}, request=self.request)
+            html = render_to_string("apps/comments/_comment.html",
+                                    {"comment": comment, "user": self.request.user},
+                                    request=self.request)
             return JsonResponse({"status": "ok", "html": html, "comment_id": comment.pk})
-
-        return redirect(comment.post.get_absolute_url() if hasattr(comment.post, "get_absolute_url") else reverse_lazy("posts:detail", args=[comment.post.pk]))
+        return redirect(comment.post.get_absolute_url() if hasattr(comment.post, "get_absolute_url")
+                        else reverse_lazy("posts:detail", args=[comment.post.pk]))
 
 
 class DeleteCommentView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    """
-    Soft-delete (deactivate) the comment by setting is_active to False.
-    Only author or staff can delete.
-    URL: /comments/delete/<pk>/
-    """
     model = Comment
 
     def test_func(self):
         obj = self.get_object()
-        return self.request.user == obj.user or self.request.user.is_staff
+        return (self.request.user == obj.user) or self.request.user.is_staff
+
+    def handle_no_permission(self):
+        if self.request.headers.get("x-requested-with") == "XMLHttpRequest":
+            return JsonResponse({"status": "error", "detail": "forbidden"}, status=403)
+        return HttpResponseForbidden("You don't have permission to delete this comment.")
 
     def post(self, request, *args, **kwargs):
         comment = self.get_object()
+        if not ((request.user == comment.user) or request.user.is_staff):
+            return self.handle_no_permission()
         comment.is_active = False
         comment.save(update_fields=["is_active"])
-
         if request.headers.get("x-requested-with") == "XMLHttpRequest":
             return JsonResponse({"status": "ok", "comment_id": comment.pk})
-
-        return redirect(comment.post.get_absolute_url() if hasattr(comment.post, "get_absolute_url") else reverse_lazy("posts:detail", args=[comment.post.pk]))
+        return redirect(comment.post.get_absolute_url() if hasattr(comment.post, "get_absolute_url")
+                        else reverse_lazy("posts:detail", args=[comment.post.pk]))

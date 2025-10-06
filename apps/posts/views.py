@@ -96,34 +96,14 @@ class PostDetailView(DetailView):
         from apps.comments.forms import CommentForm
         ctx["form"] = CommentForm()
 
-        ctx["comments_count"] = post.comments.filter(is_active=True).count()
-
-        ctx["root_comments"] = (
+        ctx["comments"] = (
             post.comments
-            .filter(parent__isnull=True, is_active=True)
+            .filter(is_active=True)
             .select_related("user")
-            .prefetch_related("replies__user", "replies__replies")
+            .order_by("created_at")
         )
 
-        def _avatar_for_user(u):
-            try:
-                return u.profile.avatar.url
-            except Exception:
-                return static('images/avatars/default.png')
-
-        def _annotate_comment(cmt):
-            try:
-                cmt.avatar_url = _avatar_for_user(cmt.user)
-            except Exception:
-                cmt.avatar_url = static('images/avatars/default.png')
-            try:
-                for r in cmt.replies.all():
-                    _annotate_comment(r)
-            except Exception:
-                pass
-
-        for c in ctx["root_comments"]:
-            _annotate_comment(c)
+        ctx["comments_count"] = ctx["comments"].count()
 
         return ctx
 

@@ -1,0 +1,132 @@
+[
+  {
+    "model": "comments.comment",
+    "pk": 101,
+    "fields": {
+      "user": 3,
+      "post": 15,
+      "parent": null,
+      "content": "nice",
+      "is_active": true,
+      "created_at": "2025-10-06T11:35:00+02:00",
+      "updated_at": "2025-10-06T11:35:00+02:00"
+    }
+  },
+  {
+    "model": "comments.comment",
+    "pk": 102,
+    "fields": {
+      "user": 2,
+      "post": 15,
+      "parent": null,
+      "content": "cool",
+      "is_active": true,
+      "created_at": "2025-10-06T11:35:10+02:00",
+      "updated_at": "2025-10-06T11:35:10+02:00"
+    }
+  },
+  {
+    "model": "comments.comment",
+    "pk": 103,
+    "fields": {
+      "user": 5,
+      "post": 1,
+      "parent": null,
+      "content": "Amazing shot — the light is perfect.",
+      "is_active": true,
+      "created_at": "2025-10-01T09:10:00+02:00",
+      "updated_at": "2025-10-01T09:10:00+02:00"
+    }
+  },
+  {
+    "model": "comments.comment",
+    "pk": 104,
+    "fields": {
+      "user": 4,
+      "post": 1,
+      "parent": 103,
+      "content": "Totally — looks like spring!",
+      "is_active": true,
+      "created_at": "2025-10-01T09:15:00+02:00",
+      "updated_at": "2025-10-01T09:15:00+02:00"
+    }
+  },
+  {
+    "model": "comments.comment",
+    "pk": 105,
+    "fields": {
+      "user": 6,
+      "post": 3,
+      "parent": null,
+      "content": "Munich is on my list — great photos!",
+      "is_active": true,
+      "created_at": "2025-10-01T13:00:00+02:00",
+      "updated_at": "2025-10-01T13:00:00+02:00"
+    }
+  },
+  {
+    "model": "comments.comment",
+    "pk": 106,
+    "fields": {
+      "user": 2,
+      "post": 9,
+      "parent": null,
+      "content": "Nice riffs — what amp are you using?",
+      "is_active": true,
+      "created_at": "2025-10-03T14:00:00+02:00",
+      "updated_at": "2025-10-03T14:00:00+02:00"
+    }
+  },
+  {
+    "model": "comments.comment",
+    "pk": 107,
+    "fields": {
+      "user": 3,
+      "post": 17,
+      "parent": null,
+      "content": "Wow — that launch gave me chills!",
+      "is_active": true,
+      "created_at": "2025-10-04T19:00:00+02:00",
+      "updated_at": "2025-10-04T19:00:00+02:00"
+    }
+  },
+  {
+    "model": "comments.comment",
+    "pk": 108,
+    "fields": {
+      "user": 1,
+      "post": 17,
+      "parent": 107,
+      "content": "Nice write-up — thanks for sharing the stream link.",
+      "is_active": true,
+      "created_at": "2025-10-04T19:05:00+02:00",
+      "updated_at": "2025-10-04T19:05:00+02:00"
+    }
+  },
+
+  { "model": "comments.comment", "pk": 109, "fields": { "user": 4, "post": 2, "parent": null, "content": "Looks cozy — want to try that cafe.", "is_active": true, "created_at": "2025-10-01T10:30:00+02:00", "updated_at": "2025-10-01T10:30:00+02:00" } },
+
+  { "model": "comments.comment", "pk": 110, "fields": { "user": 5, "post": 4, "parent": null, "content": "Late-night coding heroics 💪", "is_active": true, "created_at": "2025-10-01T23:45:00+02:00", "updated_at": "2025-10-01T23:45:00+02:00" } },
+
+  { "model": "comments.comment", "pk": 111, "fields": { "user": 6, "post": 5, "parent": null, "content": "Those Alps shots are stunning!", "is_active": true, "created_at": "2025-10-02T10:15:00+02:00", "updated_at": "2025-10-02T10:15:00+02:00" } },
+
+  { "model": "comments.comment", "pk": 112, "fields": { "user": 2, "post": 6, "parent": null, "content": "Fresh bread + coffee = perfect morning.", "is_active": true, "created_at": "2025-10-02T11:45:00+02:00", "updated_at": "2025-10-02T11:45:00+02:00" } },
+
+  { "model": "comments.comment", "pk": 113, "fields": { "user": 3, "post": 7, "parent": null, "content": "Nice pace — great weather for a run.", "is_active": true, "created_at": "2025-10-02T18:30:00+02:00", "updated_at": "2025-10-02T18:30:00+02:00" } },
+
+  { "model": "comments.comment", "pk": 114, "fields": { "user": 4, "post": 8, "parent": null, "content": "Desk looks tidy — goals!", "is_active": true, "created_at": "2025-10-02T20:00:00+02:00", "updated_at": "2025-10-02T20:00:00+02:00" } },
+
+  { "model": "comments.comment", "pk": 115, "fields": { "user": 5, "post": 10, "parent": null, "content": "Perfect lazy sunday vibe.", "is_active": true, "created_at": "2025-10-03T16:30:00+02:00", "updated_at": "2025-10-03T16:30:00+02:00" } },
+
+  { "model": "comments.comment", "pk": 116, "fields": { "user": 6, "post": 11, "parent": null, "content": "Nice work — is that an aftermarket part?", "is_active": true, "created_at": "2025-10-03T19:05:00+02:00", "updated_at": "2025-10-03T19:05:00+02:00" } },
+
+  { "model": "comments.comment", "pk": 117, "fields": { "user": 2, "post": 12, "parent": null, "content": "That lake looks unreal — where is it?", "is_active": true, "created_at": "2025-10-03T19:30:00+02:00", "updated_at": "2025-10-03T19:30:00+02:00" } },
+
+  { "model": "comments.comment", "pk": 118, "fields": { "user": 3, "post": 13, "parent": null, "content": "Dual monitors changed my life too.", "is_active": true, "created_at": "2025-10-03T22:00:00+02:00", "updated_at": "2025-10-03T22:00:00+02:00" } },
+
+  { "model": "comments.comment", "pk": 119, "fields": { "user": 4, "post": 14, "parent": null, "content": "Vintage shows are so nostalgic.", "is_active": true, "created_at": "2025-10-04T11:30:00+02:00", "updated_at": "2025-10-04T11:30:00+02:00" } },
+
+  { "model": "comments.comment", "pk": 120, "fields": { "user": 5, "post": 16, "parent": null, "content": "Sketches look great — keep going!", "is_active": true, "created_at": "2025-10-04T13:40:00+02:00", "updated_at": "2025-10-04T13:40:00+02:00" } },
+
+  { "model": "comments.comment", "pk": 121, "fields": { "user": 6, "post": 18, "parent": null, "content": "Coding marathon sounds exhausting but productive.", "is_active": true, "created_at": "2025-10-04T22:10:00+02:00", "updated_at": "2025-10-04T22:10:00+02:00" } }
+]

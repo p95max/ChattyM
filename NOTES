@@ -22,6 +22,7 @@ http://127.0.0.1:8000/api/docs/
 docker compose exec web python manage.py loaddata fixtures/users_fixture.json
 docker compose exec web python manage.py loaddata fixtures/users_emails_fixture.json
 docker compose exec web python manage.py loaddata fixtures/posts_fixture.json
+docker compose exec web python manage.py loaddata fixtures/comments_fixture.json
 
 
 

@@ -3,10 +3,18 @@
 
 <div id="comment-{{ comment.pk }}" class="comment-item mb-3 d-flex">
   <div class="me-2">
-    <img src="{{ comment.user.profile.avatar.url|default:default_avatar }}"
-         alt="{{ comment.user.username }}"
-         class="rounded-circle" width="40" height="40"
-         onerror="this.onerror=null;this.src='{{ default_avatar }}';" />
+    {% if comment.user.profile.avatar %}
+      <img src="{{ comment.user.profile.avatar.url }}"
+           alt="{{ comment.user.get_full_name|default:comment.user.username }}"
+           class="rounded-circle" width="40" height="40"
+           loading="lazy"
+           onerror="this.onerror=null;this.src='{{ default_avatar }}';" />
+    {% else %}
+      <img src="{{ default_avatar }}"
+           alt="{{ comment.user.get_full_name|default:comment.user.username }}"
+           class="rounded-circle" width="40" height="40"
+           loading="lazy" />
+    {% endif %}
   </div>
 
   <div class="flex-grow-1">
@@ -14,8 +22,14 @@
       <div class="author-block">
         <strong class="me-2">{{ comment.user.get_full_name|default:comment.user.username }}</strong>
         <small class="text-muted">{{ comment.created_at|date:"d.m.Y H:i" }}</small>
-        {% if comment.updated_at %}
-          <small class="text-muted ms-2">(edited)</small>
+
+        {# corrected: no parentheses #}
+        {% if comment.edited_at or comment.updated_at and comment.updated_at != comment.created_at %}
+          {% if comment.edited_by and comment.edited_by != comment.user and comment.edited_by.is_staff %}
+            <small class="text-muted ms-2">(edited by moderator)</small>
+          {% else %}
+            <small class="text-muted ms-2">(edited)</small>
+          {% endif %}
         {% endif %}
       </div>
     </div>
@@ -28,19 +42,19 @@
       {% endif %}
     </div>
 
-    {% if user.is_authenticated %}
-      {% if user == comment.user or user.is_staff %}
-        <div class="comment-actions mt-2 d-flex gap-2">
-          <a href="{% url 'comments:edit' comment.pk %}" class="btn btn-sm btn-outline-secondary">Edit</a>
+   {% if user.is_staff or user.is_authenticated and user == comment.user %}
+      <div class="comment-actions mt-2 d-flex gap-2">
+        <a href="{% url 'comments:edit' comment.pk %}"
+           class="btn btn-sm btn-outline-secondary"
+           aria-label="Edit comment {{ comment.pk }}">Edit</a>
 
-          <form action="{% url 'comments:delete' comment.pk %}"
-                method="post"
-                class="comment-delete-form d-inline-block m-0">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-          </form>
-        </div>
-      {% endif %}
+        <form action="{% url 'comments:delete' comment.pk %}"
+              method="post"
+              class="comment-delete-form d-inline-block m-0">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+        </form>
+      </div>
     {% endif %}
   </div>
 </div>

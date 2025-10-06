@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils import timezone
@@ -24,15 +25,23 @@ class Comment(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(null=True, blank=True)
 
-    class Meta:
-        ordering = ("created_at",)
-        indexes = [
-            models.Index(fields=["post", "created_at"]),
-        ]
+    edited_at = models.DateTimeField(null=True, blank=True, help_text="When the comment was last edited.")
+    edited_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL,
+                                  related_name='edited_comments', help_text="User who last edited this comment.")
 
-    def __str__(self) -> str:
+    class Meta:
+        ordering = ('created_at',)
+
+    def __str__(self):
         return f"Comment #{self.pk} by {self.user}"
 
-    def mark_edited(self) -> None:
-        self.updated_at = timezone.now()
-        self.save(update_fields=["updated_at"])
+    def mark_edited(self, editor):
+        """
+        Mark this comment as edited by `editor`.
+
+        Save timestamp and set `edited_by`. Call this after making changes
+        in views that perform edits. `editor` may be the original author
+        or a staff/moderator.
+        """
+        self.edited_at = timezone.now()
+        self.edited_by = editor

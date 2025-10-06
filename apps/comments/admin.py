@@ -3,7 +3,5 @@ from .models import Comment
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ("pk", "user", "post", "is_active", "created_at", "updated_at")
-    list_filter = ("is_active", "created_at", "user")
-    search_fields = ("content", "user__username", "post__title")
-    raw_id_fields = ("user", "post", "parent")
+    list_display = ('pk', 'post', 'user', 'is_active', 'created_at', 'edited_at', 'edited_by')
+    readonly_fields = ('created_at', 'updated_at', 'edited_at')

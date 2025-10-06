@@ -23,10 +23,9 @@
         <strong class="me-2">{{ comment.user.get_full_name|default:comment.user.username }}</strong>
         <small class="text-muted">{{ comment.created_at|date:"d.m.Y H:i" }}</small>
 
-        {# corrected: no parentheses #}
         {% if comment.edited_at or comment.updated_at and comment.updated_at != comment.created_at %}
           {% if comment.edited_by and comment.edited_by != comment.user and comment.edited_by.is_staff %}
-            <small class="text-muted ms-2">(edited by moderator)</small>
+            <small class="text-muted ms-2">(edited by site administration)</small>
           {% else %}
             <small class="text-muted ms-2">(edited)</small>
           {% endif %}

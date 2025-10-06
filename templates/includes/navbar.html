@@ -12,18 +12,35 @@
 
       <!-- nav menu -->
       <ul class="navbar-nav me-auto">
+      {% url 'core:main' as main_url %}
+      {% if request.path != main_url %}
         <li class="nav-item">
           <a class="nav-link {% if request.resolver_match.url_name == 'main' %}active{% endif %}"
              href="{% url 'core:main' %}">
             Home
           </a>
         </li>
+      {% endif %}
+      {% url 'posts:list' as main_url %}
+      {% if request.path != main_url %}
         <li class="nav-item">
           <a class="nav-link {% if request.resolver_match.url_name == 'list' %}active{% endif %}"
              href="{% url 'posts:list' %}">
-            Posts
+            Recent Posts
           </a>
         </li>
+      {% endif %}
+      {% url 'posts:user_posts' as main_url %}
+      {% if request.path != main_url %}
+       {% if user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'user_posts' %}active{% endif %}"
+             href="{% url 'posts:user_posts' %}">
+            My Posts
+          </a>
+        </li>
+      {% endif %}
+      {% endif %}
       </ul>
 
       <!-- user menu -->

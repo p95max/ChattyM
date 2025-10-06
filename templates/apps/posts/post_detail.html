@@ -42,10 +42,13 @@
     </p>
     <p class="card-text">{{ post.text|linebreaks }}</p>
 
+    {#Like button#}
     <div class="d-flex justify-content-between mt-4">
       <div>
-        <span class="badge bg-light text-dark border">❤️ {{ post.likes_count }}</span>
+            {% include "includes/like_button.html" with post=post %}
       </div>
+
+
       {% if user == post.user %}
         <div>
           <a href="{% url 'posts:edit' post.pk %}" class="btn btn-sm btn-outline-secondary">Edit</a>

@@ -5,10 +5,17 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import ListView, DetailView
 from django.http import Http404
 from .models import Post
-
+from apps.likes.models import Like
 
 
 class PostListView(ListView):
+    """
+    List all active posts with pagination.
+
+    Context additions:
+      - liked_post_ids: set of post PKs liked by the current user (if authenticated)
+      - no_posts, empty_message preserved as before
+    """
     model = Post
     template_name = "apps/posts/posts_list.html"
     context_object_name = "posts"
@@ -32,15 +39,36 @@ class PostListView(ListView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
+
         object_list = getattr(self, "object_list", None)
+        if object_list is None:
+            object_list = ctx.get("object_list", None)
+
         ctx["no_posts"] = (object_list is None) or (len(object_list) == 0)
         if ctx["no_posts"]:
             ctx.setdefault("empty_message", "No posts yet. Be the first to create one.")
+
+        user = self.request.user
+        ctx["liked_post_ids"] = set()
+        if user.is_authenticated and object_list:
+            try:
+                post_pks = [p.pk for p in object_list]
+            except Exception:
+                post_pks = []
+            if post_pks:
+                liked_qs = Like.objects.filter(user=user, post_id__in=post_pks).values_list("post_id", flat=True)
+                ctx["liked_post_ids"] = set(liked_qs)
+
         return ctx
 
 
-
 class PostDetailView(DetailView):
+    """
+    Show a single post detail.
+
+    Context additions:
+      - user_liked: boolean, whether current user liked this post
+    """
     model = Post
     template_name = "apps/posts/post_detail.html"
     context_object_name = "post"
@@ -55,16 +83,26 @@ class PostDetailView(DetailView):
             messages.warning(request, "Requested post not found. It may have been deleted.")
             return redirect("posts:list")
 
-
-
-
-
-
-
+    def get_context_data(self, **kwargs):
+        """
+        Add `user_liked` boolean to template context so template can render like button
+        without calling model/query methods directly.
+        """
+        ctx = super().get_context_data(**kwargs)
+        user = self.request.user
+        post = self.object
+        ctx["user_liked"] = False
+        if user.is_authenticated:
+            ctx["user_liked"] = Like.objects.filter(user=user, post=post).exists()
+        return ctx
 
 
 class UserPostsView(LoginRequiredMixin, ListView):
-    """List of posts created by the currently logged-in user."""
+    """
+    List of posts created by the currently logged-in user.
+
+    Adds liked_post_ids to the context (for consistency with other lists).
+    """
     model = Post
     template_name = "apps/posts/user_posts.html"
     context_object_name = "posts"
@@ -75,4 +113,20 @@ class UserPostsView(LoginRequiredMixin, ListView):
         """Filter posts belonging to the current user only."""
         return Post.objects.filter(user=self.request.user).order_by("-created_at")
 
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
 
+        object_list = getattr(self, "object_list", None) or ctx.get("object_list", None)
+
+        user = self.request.user
+        ctx["liked_post_ids"] = set()
+        if user.is_authenticated and object_list:
+            try:
+                post_pks = [p.pk for p in object_list]
+            except Exception:
+                post_pks = []
+            if post_pks:
+                liked_qs = Like.objects.filter(user=user, post_id__in=post_pks).values_list("post_id", flat=True)
+                ctx["liked_post_ids"] = set(liked_qs)
+
+        return ctx

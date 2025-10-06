@@ -1,0 +1,11 @@
+<button
+  type="button"
+  class="btn btn-sm btn-outline-primary like-btn"
+  data-post-id="{{ post.pk }}"
+  data-like-url="{% url 'likes:toggle' post.pk %}"
+  aria-pressed="false"
+  title="Like">
+  <i class="bi bi-heart"></i>
+  <span class="heart-emoji"></span>
+  <span class="likes-number">{{ post.likes_count }}</span>
+</button>

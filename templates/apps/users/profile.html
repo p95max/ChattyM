@@ -34,6 +34,10 @@
             {% if profile_user.birthday %}
               • Birthday: {{ profile_user.birthday|date:"M d, Y" }}
             {% endif %}
+
+              <br>
+          {% include "apps/subscriptions/_follow_button.html" with profile_user=profile_user is_following=is_following followers_count=followers_count %}
+
           </div>
 
           {% if is_owner %}

@@ -51,7 +51,12 @@ class ToggleSubscriptionView(View):
 
         followers_count = Subscription.objects.filter(following=target, is_active=True).count()
 
-        return JsonResponse({"status": "ok", "following": following, "followers_count": followers_count})
+        return JsonResponse({
+            "status": "ok",
+            "is_subscribed": following,
+            "action": "subscribed" if following else "unsubscribed",
+            "followers_count": followers_count,
+        })
 
 
 class FollowersListView(ListView):

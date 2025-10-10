@@ -6,6 +6,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from apps.posts.models import Post
 from .forms import ProfileForm
+from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
+from apps.subscriptions.models import Subscription
 
 User = get_user_model()
 
@@ -22,18 +25,33 @@ class BaseProfileView(LoginRequiredMixin, View):
 
         recent_posts = posts_qs.order_by("-created_at")[:4]
 
+        followers_count = Subscription.objects.filter(following=target_user, is_active=True).count()
+
+        is_subscribed = False
+        if request.user.is_authenticated and request.user != target_user:
+            is_subscribed = Subscription.objects.filter(
+                follower=request.user, following=target_user, is_active=True
+            ).exists()
+
+        toggle_url = reverse("subscriptions:toggle", args=[target_user.pk])
+
         ctx = {
             "profile_user": target_user,
             "is_owner": is_owner,
             "posts_count": posts_qs.count(),
             "likes_sum": posts_qs.aggregate(Sum("likes_count"))["likes_count__sum"] or 0,
             "recent_posts": recent_posts,
+            # добавляем subscription keys
+            "is_subscribed": is_subscribed,
+            "followers_count": followers_count,
+            "toggle_url": toggle_url,
         }
 
         if is_owner:
             ctx["form"] = form or ProfileForm(instance=target_user)
 
         return ctx
+
 
 
 class MyProfileView(BaseProfileView):
@@ -50,16 +68,6 @@ class MyProfileView(BaseProfileView):
             return redirect("users:my_profile")
         return render(request, self.template_name, self.get_context(request, request.user, form=form))
 
-
-from django.shortcuts import render, redirect
-from django.urls import reverse
-from django.contrib import messages
-from django.utils.http import url_has_allowed_host_and_scheme
-
-from django.views import View
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
 
 class ProfileView(BaseProfileView):
 

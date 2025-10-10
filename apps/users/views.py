@@ -35,16 +35,20 @@ class BaseProfileView(LoginRequiredMixin, View):
 
         toggle_url = reverse("subscriptions:toggle", args=[target_user.pk])
 
+        followers_qs = Subscription.objects.filter(
+            following=target_user, is_active=True
+        ).select_related("follower").order_by("-created_at")[:10]
+
         ctx = {
             "profile_user": target_user,
             "is_owner": is_owner,
             "posts_count": posts_qs.count(),
             "likes_sum": posts_qs.aggregate(Sum("likes_count"))["likes_count__sum"] or 0,
             "recent_posts": recent_posts,
-            # добавляем subscription keys
             "is_subscribed": is_subscribed,
             "followers_count": followers_count,
             "toggle_url": toggle_url,
+            "followers": followers_qs,
         }
 
         if is_owner:

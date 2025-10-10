@@ -65,7 +65,7 @@ class FollowersListView(ListView):
     URL: /subscriptions/followers/<int:user_pk>/
     """
     model = Subscription
-    template_name = "apps/subscriptions/followers_list.html"
+    template_name = "apps/subscriptions/follower_list.html"
     context_object_name = "subscriptions"
     paginate_by = 30
 

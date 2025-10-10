@@ -25,19 +25,21 @@
                    style="width:128px;height:128px;object-fit:cover;">
             {% endif %}
           </div>
+
           <h5 class="mb-1">
             {{ profile_user.first_name }} {{ profile_user.last_name }}
           </h5>
           <div class="text-muted small mb-2">{{ profile_user.email }}</div>
-          <div class="text-muted small">
+
+          <div class="text-muted small mb-2">
             Joined: {{ profile_user.date_joined|date:"M d, Y" }}
             {% if profile_user.birthday %}
               • Birthday: {{ profile_user.birthday|date:"M d, Y" }}
             {% endif %}
+          </div>
 
-              <br>
-          {% include "apps/subscriptions/_follow_button.html" with profile_user=profile_user is_following=is_following followers_count=followers_count %}
-
+          <div class="mb-2">
+            {% include "apps/subscriptions/_follow_button.html" with profile_user=profile_user is_following=is_subscribed followers_count=followers_count %}
           </div>
 
           {% if is_owner %}
@@ -78,6 +80,11 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Followers widget-->
+      <div class="mt-3">
+        {% include "apps/subscriptions/_follower_widget.html" with followers=followers followers_count=followers_count profile_user=profile_user %}
       </div>
     </div>
 
@@ -159,5 +166,27 @@
 {% endblock %}
 
 {% block extra_css %}
-<style>.card { border-radius: 14px; }</style>
+<style>
+.card { border-radius: 14px; }
+.follower-list .list-group-item { border: none; padding: .5rem 0; }
+.follower-list .list-group-item + .list-group-item { border-top: 1px solid rgba(0,0,0,0.04); }
+/* follower widget styling */
+.follower-widget .card-header { padding: .6rem .9rem; }
+.follower-widget .card-body { max-height: 220px; overflow: auto; } /* скролл если много */
+.follower-widget .list-group-item { border: none; display:flex; align-items:center; }
+.follower-widget .list-group-item + .list-group-item { border-top: 1px solid rgba(0,0,0,0.04); }
+.follower-widget .follower-meta { min-width:0; } /* для text-truncate */
+.subscribe-btn {
+  min-width: 84px;
+  padding: .25rem .6rem;
+  font-weight:600;
+  border-radius: 999px;
+}
+.subscribe-btn.subscribed {
+  background: transparent;
+  color: var(--bs-primary, #0d6efd);
+  border: 1px solid rgba(13,110,253,0.12);
+  box-shadow: none;
+}
+</style>
 {% endblock %}

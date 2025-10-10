@@ -1,0 +1,24 @@
+<div class="list-group-item d-flex align-items-center justify-content-between py-2 px-3">
+  <div class="follower-meta text-truncate">
+    <a href="{% url 'users:author_profile' username=sub.follower.username %}" class="text-decoration-none text-dark fw-medium">
+      {{ sub.follower.get_full_name|default:sub.follower.username }}
+    </a>
+    {% if sub.follower.profile and sub.follower.profile.short_bio %}
+      <div class="small text-muted">{{ sub.follower.profile.short_bio }}</div>
+    {% endif %}
+  </div>
+
+  {% if request.user.is_authenticated and request.user != sub.follower %}
+    <div class="ms-3 flex-shrink-0">
+      <button
+        type="button"
+        class="btn btn-sm subscribe-btn {% if following_ids and sub.follower.pk in following_ids %}subscribed{% endif %}"
+        data-toggle-url="{% url 'subscriptions:toggle' sub.follower.pk %}"
+        data-user-id="{{ sub.follower.pk }}"
+        data-is-subscribed="{% if following_ids and sub.follower.pk in following_ids %}1{% else %}0{% endif %}"
+        aria-pressed="{% if following_ids and sub.follower.pk in following_ids %}true{% else %}false{% endif %}">
+        <span class="subscribe-label">{% if following_ids and sub.follower.pk in following_ids %}Following{% else %}Follow{% endif %}</span>
+      </button>
+    </div>
+  {% endif %}
+</div>

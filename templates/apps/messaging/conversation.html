@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Conversation | {{ block.super }}{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-8">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5>{{ conversation.title|default:"Direct message" }}</h5>
+      <form method="post" action="{% url 'messaging:mark_read' conversation.pk %}">
+        {% csrf_token %}
+        <button class="btn btn-sm btn-outline-secondary">Mark read</button>
+      </form>
+    </div>
+
+    <div id="messages-list" class="mb-3">
+      {% for msg in messages %}
+        <div class="mb-2">
+          <small class="text-muted">{{ msg.sender.get_full_name|default:msg.sender.username }} • {{ msg.created_at|date:"d.m.Y H:i" }}</small>
+          <div class="p-2 border rounded bg-light{% if msg.sender == user %} text-end{% endif %}">
+            {% if msg.is_deleted %}
+              <em class="text-muted">Message removed</em>
+            {% else %}
+              {{ msg.content|linebreaksbr }}
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    {% if user.is_authenticated %}
+      <form id="message-send-form" method="post" action="{% url 'messaging:send_message' conversation.pk %}">
+        {% csrf_token %}
+        {{ form.content }}
+        <div class="mt-2">
+          <button class="btn btn-primary" type="submit">Send</button>
+        </div>
+      </form>
+    {% else %}
+      <a href="{% url 'account_login' %}?next={{ request.path }}" class="btn btn-outline-primary">Login to reply</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script src="{% static 'js/messaging.js' %}" defer></script>
+{% endblock %}

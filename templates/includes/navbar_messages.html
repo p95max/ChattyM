@@ -1,0 +1,65 @@
+{% load static %}
+{% if user.is_authenticated %}
+<li class="nav-item dropdown me-2 position-relative">
+  <a class="nav-link dropdown-toggle d-flex align-items-center position-relative"
+     href="{% url 'messages:inbox' %}" id="navMessages" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <i class="bi bi-chat-dots-fill fs-5"></i>
+    {% if unread_messages_count|default:0 > 0 %}
+      <span class="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill unread-badge">
+        {{ unread_messages_count }}
+      </span>
+    {% endif %}
+    <span class="d-none d-sm-inline ms-1">Messages</span>
+  </a>
+
+  <ul class="dropdown-menu dropdown-menu-end py-2 shadow" aria-labelledby="navMessages" style="min-width: 320px;">
+    <li class="dropdown-header small text-muted px-3">Recent conversations</li>
+
+    {% if recent_conversations_for_nav %}
+      {% for it in recent_conversations_for_nav %}
+        <li>
+          <a href="{% url 'messages:conversation_detail' it.conversation.pk %}" class="dropdown-item d-flex align-items-start">
+            <div class="me-2">
+              {% if it.other_user and it.other_user.avatar %}
+                <img src="{{ it.other_user.avatar.url }}" alt="avatar" class="rounded-circle" style="width:40px;height:40px;object-fit:cover;">
+              {% else %}
+                <div class="rounded-circle bg-light text-muted d-inline-flex align-items-center justify-content-center" style="width:40px;height:40px;">
+                  {{ it.other_user.username|default:"?"|slice:":1"|upper }}
+                </div>
+              {% endif %}
+            </div>
+            <div class="flex-grow-1">
+              <div class="d-flex justify-content-between">
+                <div class="fw-semibold small text-truncate" style="max-width:170px;">
+                  {{ it.other_user.get_full_name|default:it.other_user.username }}
+                </div>
+                {% if it.last_message %}
+                  <div class="small text-muted ms-2">{{ it.last_message.created_at|date:"M d, H:i" }}</div>
+                {% endif %}
+              </div>
+              <div class="small text-muted text-truncate">
+{% if it.last_message %}
+  {{ it.last_message.text|truncatechars:60 }}
+{% else %}
+  No messages yet
+{% endif %}
+
+              </div>
+              {% if it.unread and it.unread > 0 %}
+                <div class="mt-1">
+                  <span class="badge bg-primary">{{ it.unread }}</span>
+                </div>
+              {% endif %}
+            </div>
+          </a>
+        </li>
+        <li><hr class="dropdown-divider my-1"></li>
+      {% endfor %}
+      <li><a class="dropdown-item text-center small" href="{% url 'messages:inbox' %}">View all messages</a></li>
+    {% else %}
+      <li class="px-3 py-2 text-muted small">No conversations yet</li>
+    {% endif %}
+  </ul>
+</li>
+{% else %}
+{% endif %}

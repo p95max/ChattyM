@@ -20,7 +20,7 @@ urlpatterns = [
     path("comments/", include("apps.comments.urls", namespace="comments")),
     path("likes/", include("apps.likes.urls", namespace="likes")),
     path("subscriptions/", include("apps.subscriptions.urls", namespace="subscriptions")),
-    path("messaging/", include("apps.messaging.urls", namespace="messaging")),
+    path("messages/", include("apps.messaging.urls", namespace="messages")),
 
     path("api/", include(router.urls)),
 ]

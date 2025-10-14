@@ -1,0 +1,42 @@
+<div class="modal fade" id="composeMessageModal" tabindex="-1" aria-labelledby="composeMessageLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form method="post"
+            id="composeMessageForm"
+            action="{% if recipient %}{% url 'messages:start_dm' recipient.pk %}{% else %}#{% endif %}">
+        {% csrf_token %}
+
+        <div class="modal-header">
+          <h5 class="modal-title" id="composeMessageLabel">
+            New message to
+            {% if recipient %}
+              <span id="composeRecipientName">{{ recipient.get_full_name|default:recipient.username }}</span>
+            {% else %}
+              <span id="composeRecipientName"></span>
+            {% endif %}
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body">
+          <input type="hidden" name="recipient_id" id="composeRecipientId" value="{% if recipient %}{{ recipient.pk }}{% endif %}">
+
+          <div class="mb-3">
+            <label for="messageSubject" class="form-label">Subject</label>
+            <input type="text" class="form-control" id="messageSubject" name="subject" maxlength="200" placeholder="(optional)">
+          </div>
+
+          <div class="mb-3">
+            <label for="messageBody" class="form-label">Message</label>
+            <textarea id="messageBody" name="body" class="form-control" rows="5" required></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Send</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -78,6 +78,28 @@ main.container {
   box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
   z-index: 2;
 }
+
+.messages-list { display: flex; flex-direction: column; gap: .8rem; padding: 1rem; }
+.message-row { display: flex; align-items: flex-end; gap: .6rem; }
+.message-row.them { justify-content: flex-start; }
+.message-row.me { justify-content: flex-end; }
+.avatar-sm { width:40px; height:40px; border-radius:50%; object-fit:cover; }
+.message-bubble { max-width: 72%; padding: .6rem .9rem; border-radius: 14px; box-shadow: 0 6px 18px rgba(20,20,20,0.04); word-break: break-word; }
+.message-bubble--them { background: #f8f9fa; color: #212529; border-top-left-radius: 4px; }
+.message-bubble--me { background: var(--bs-primary, #0d6efd); color: #fff; text-align: right; border-top-right-radius: 4px; }
+.message-bubble--them::after,
+.message-bubble--me::after { content: ""; width: 10px; height: 10px; position: relative; display: block; }
+.message-row.them .message-bubble--them::after { transform: translate(-14px, 10px) rotate(45deg); background: #f8f9fa; margin-left: -10px; z-index: -1; }
+.message-row.me .message-bubble--me::after { transform: translate(14px, 10px) rotate(45deg); background: var(--bs-primary, #0d6efd); margin-left: 10px; z-index: -1; }
+.message-subject { font-size: .95rem; }
+.message-body { white-space: pre-wrap; }
+.meta .sender-name { font-size: .9rem; }
+.meta .time { font-size: .75rem; opacity: .7; }
+@media (max-width:576px) {
+  .message-bubble { max-width: 86%; }
+  .avatar-sm { width:32px; height:32px; }
+}
+
   </style>
   {% endblock extra_css %}
 
@@ -87,14 +109,17 @@ main.container {
   {% include "includes/navbar.html" %}
 
   <main class="container mt-4">
-    {% if messages %}
-      {% for message in messages %}
+  {% if messages %}
+    {% for message in messages %}
+      {# показываем только реальные сообщения от django.contrib.messages #}
+      {% if message.level %}
         <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
           {{ message }}
           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-      {% endfor %}
-    {% endif %}
+      {% endif %}
+    {% endfor %}
+  {% endif %}
 
     {% block content %}{% endblock %}
   </main>

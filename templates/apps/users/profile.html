@@ -38,8 +38,39 @@
             {% endif %}
           </div>
 
-          <div class="mb-2">
-            {% include "apps/subscriptions/_follow_button.html" with profile_user=profile_user is_following=is_subscribed followers_count=followers_count %}
+          {# follow + message #}
+          <div class="mb-2 d-flex flex-column align-items-center gap-2">
+
+            <div class="w-100 d-flex justify-content-center">
+              {% include "apps/subscriptions/_follow_button.html" with profile_user=profile_user is_following=is_subscribed followers_count=followers_count %}
+            </div>
+
+{% if not is_owner %}
+  {% if user.is_authenticated %}
+    <div class="w-100 d-flex justify-content-center">
+      <button type="button"
+              class="btn btn-outline-primary message-btn w-100"
+              data-bs-toggle="modal"
+              data-bs-target="#composeMessageModal"
+              data-recipient-id="{{ profile_user.pk }}"
+              data-recipient-name="{{ profile_user.get_full_name|default:profile_user.username }}">
+        <i class="bi bi-envelope-fill me-1" aria-hidden="true"></i>
+        Write a private message
+      </button>
+    </div>
+  {% else %}
+    <div class="w-100 d-flex justify-content-center">
+      <a href="{% url 'account_login' %}?next={{ request.path }}" class="btn btn-outline-primary w-100">
+        <i class="bi bi-envelope-fill me-1" aria-hidden="true"></i>
+        Write (Enter)
+      </a>
+    </div>
+  {% endif %}
+{% endif %}
+
+{% include "includes/compose_message_modal.html" with recipient=profile_user %}
+
+
           </div>
 
           {% if is_owner %}
@@ -163,6 +194,11 @@
     </div>
   </div>
 </div>
+
+<!-- message modal -->
+{% include "includes/compose_message_modal.html" with recipient=profile_user %}
+
+
 {% endblock %}
 
 {% block extra_css %}
@@ -188,5 +224,62 @@
   border: 1px solid rgba(13,110,253,0.12);
   box-shadow: none;
 }
+
+/* message button styling */
+.message-btn {
+  min-width: 120px;
+  font-weight: 700;
+  border-radius: 999px;
+  padding-left: .6rem;
+  padding-right: .6rem;
+}
+.message-btn i { font-size: 1.02rem; vertical-align: middle; }
 </style>
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var composeModalEl = document.getElementById('composeMessageModal');
+  if (!composeModalEl) return;
+
+  composeModalEl.addEventListener('show.bs.modal', function (event) {
+    var btn = event.relatedTarget;
+    if (!btn) return;
+
+    var recipientId = btn.getAttribute('data-recipient-id') || '';
+    var recipientName = btn.getAttribute('data-recipient-name') || '';
+
+    var input = document.getElementById('compose-recipient-id');
+    if (input) input.value = recipientId;
+
+    // Обновим заголовок модала
+    var title = composeModalEl.querySelector('.modal-title');
+    if (title) title.textContent = recipientName ? ('Новое сообщение — ' + recipientName) : 'Новое сообщение';
+
+    // фокус на textarea после показа
+    setTimeout(function () {
+      var ta = document.getElementById('compose-body');
+      if (ta) ta.focus();
+    }, 200);
+  });
+
+  // Предотвращаем двойную отправку
+  var form = document.getElementById('composeMessageForm');
+  if (form) {
+    form.addEventListener('submit', function (e) {
+      var btn = form.querySelector('button[type="submit"]');
+      if (btn && btn.dataset.submitted === '1') {
+        e.preventDefault();
+        return;
+      }
+      if (btn) {
+        btn.dataset.submitted = '1';
+        btn.disabled = true;
+      }
+    });
+  }
+});
+</script>
 {% endblock %}

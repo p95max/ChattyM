@@ -9,7 +9,7 @@ class Conversation(models.Model):
     Simple conversation container. Can be used for 1:1 DM or group chats.
     For a 1:1 chat we create exactly one Conversation with two Participants.
     """
-    title = models.CharField(max_length=200, blank=True)  
+    title = models.CharField(max_length=200, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -77,6 +77,15 @@ class Message(models.Model):
             models.Index(fields=["conversation", "created_at"]),
             models.Index(fields=["sender", "created_at"]),
         ]
+
+    @property
+    def text(self):
+        for name in ("content", "body", "text", "message", "message_text"):
+            if hasattr(self, name):
+                val = getattr(self, name)
+                if val:
+                    return val
+        return ""
 
     def __str__(self):
         return f"Message {self.pk} by {self.sender}"

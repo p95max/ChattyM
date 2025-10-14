@@ -107,18 +107,14 @@ class ConversationDetailView(LoginRequiredMixin, ParticipantRequiredMixin, FormM
 
     def get_context_data(self, **kwargs):
         """
-        Build context for conversation view and attach `display_text`
-        attribute to each Message instance — the first existing text field
-        (content, body, text, message, message_text, ...).
+        Prepare messages with a unified text attribute and detect the other participant.
         """
         ctx = super().get_context_data(**kwargs)
         messages_qs = self.conversation.messages.select_related("sender").order_by("created_at")
-
         messages = list(messages_qs)
 
         possible_text_fields = ("content", "body", "text", "message", "message_text", "body_text")
         for m in messages:
-
             txt = ""
             for fname in possible_text_fields:
                 val = getattr(m, fname, None)
@@ -127,9 +123,14 @@ class ConversationDetailView(LoginRequiredMixin, ParticipantRequiredMixin, FormM
                     break
             m.display_text = txt or ""
 
+        other_part = self.conversation.participants.exclude(user=self.request.user).select_related("user").first()
+        other_user = getattr(other_part, "user", None)
+
         ctx["messages"] = messages
         ctx["form"] = ctx.get("form") or self.get_form()
+        ctx["other_user"] = other_user
         return ctx
+
 
     def post(self, request, *args, **kwargs):
         """

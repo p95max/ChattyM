@@ -17,6 +17,7 @@
           {% endif %}
         </small>
       </div>
+
       <div class="ms-auto">
         <form method="post" action="{% url 'messages:mark_read' conversation.pk %}">
           {% csrf_token %}

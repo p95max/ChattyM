@@ -53,30 +53,8 @@
     </button>
   </form>
 
-{# --- messages  --- #}
 
 {% include "includes/navbar_messages.html" %}
-
-
-{% if user.is_authenticated %}
-  {% with unread=unread_messages_count|default:0 %}
-    <div class="nav-item nav-link position-relative px-2 d-flex align-items-center">
-      <a href="{% url 'messages:inbox' %}"
-         class="messages-link d-inline-flex align-items-center text-decoration-none text-reset"
-         title="Messages" aria-label="Messages">
-        <i class="bi bi-chat-dots-fill fs-5" aria-hidden="true"></i>
-        <span class="ms-1 d-none d-sm-inline"></span>
-      </a>
-
-      {% if unread|add:0 > 0 %}
-        <span class="unread-badge position-absolute top-0 start-100 translate-middle badge rounded-pill">
-          {{ unread }}
-          <span class="visually-hidden">unread messages</span>
-        </span>
-      {% endif %}
-    </div>
-  {% endwith %}
-{% endif %}
 
 
 {#Profile tab#}

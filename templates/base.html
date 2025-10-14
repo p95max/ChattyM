@@ -111,7 +111,6 @@ main.container {
   <main class="container mt-4">
   {% if messages %}
     {% for message in messages %}
-      {# показываем только реальные сообщения от django.contrib.messages #}
       {% if message.level %}
         <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
           {{ message }}

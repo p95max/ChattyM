@@ -106,8 +106,27 @@ class ConversationDetailView(LoginRequiredMixin, ParticipantRequiredMixin, FormM
         return response
 
     def get_context_data(self, **kwargs):
+        """
+        Build context for conversation view and attach `display_text`
+        attribute to each Message instance — the first existing text field
+        (content, body, text, message, message_text, ...).
+        """
         ctx = super().get_context_data(**kwargs)
-        messages = self.conversation.messages.select_related("sender").order_by("created_at")
+        messages_qs = self.conversation.messages.select_related("sender").order_by("created_at")
+
+        messages = list(messages_qs)
+
+        possible_text_fields = ("content", "body", "text", "message", "message_text", "body_text")
+        for m in messages:
+
+            txt = ""
+            for fname in possible_text_fields:
+                val = getattr(m, fname, None)
+                if val:
+                    txt = val
+                    break
+            m.display_text = txt or ""
+
         ctx["messages"] = messages
         ctx["form"] = ctx.get("form") or self.get_form()
         return ctx

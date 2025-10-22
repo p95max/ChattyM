@@ -1,6 +1,5 @@
 <nav class="navbar navbar-expand-lg navbar-light navbar-custom shadow-sm">
   <div class="container">
-
     <a class="navbar-brand fw-bold" href="{% url 'core:main' %}">ChattyM</a>
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -9,162 +8,69 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        {% url 'core:main' as main_url %}
+        {% if request.path != main_url %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'core:main' %}">Home</a></li>
+        {% endif %}
 
-      <!-- nav menu -->
-<ul class="navbar-nav me-auto">
-  {% url 'core:main' as main_url %}
-  {% if request.path != main_url %}
-    <li class="nav-item">
-      <a class="nav-link {% if request.resolver_match.url_name == 'main' %}active{% endif %}"
-         href="{% url 'core:main' %}">Home</a>
-    </li>
-  {% endif %}
+        {% url 'posts:list' as posts_url %}
+        {% if request.path != posts_url %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'posts:list' %}">Recent Posts</a></li>
+        {% endif %}
 
-  {% url 'posts:list' as main_url %}
-  {% if request.path != main_url %}
-    <li class="nav-item">
-      <a class="nav-link {% if request.resolver_match.url_name == 'list' %}active{% endif %}"
-         href="{% url 'posts:list' %}">Recent Posts</a>
-    </li>
-  {% endif %}
-
-  {% url 'posts:user_posts' as main_url %}
-  {% if request.path != main_url and user.is_authenticated %}
-    <li class="nav-item">
-      <a class="nav-link {% if request.resolver_match.url_name == 'user_posts' %}active{% endif %}"
-         href="{% url 'posts:user_posts' %}">My Posts</a>
-    </li>
-  {% endif %}
-</ul>
-
-<div class="d-flex align-items-center ms-auto gap-2">
-
-  <form class="d-flex align-items-center search-inline" role="search" method="get" action="{% url 'posts:list' %}">
-    <label for="nav-search" class="visually-hidden">Search posts</label>
-    <input id="nav-search"
-           name="q"
-           class="form-control form-control-sm me-1"
-           type="search"
-           placeholder="Search..."
-           aria-label="Search posts"
-           value="{{ request.GET.q|default_if_none:'' }}">
-    <button class="btn btn-outline-primary btn-sm" type="submit" aria-label="Submit search">
-      <i class="bi bi-search"></i>
-    </button>
-  </form>
-
-{% include "includes/notifications_dropdown.html" %}
-{% include "includes/navbar_messages.html" %}
-
-
-{#Profile tab#}
-  <ul class="navbar-nav ms-0">
-    {% if user.is_authenticated %}
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileMenu"
-           role="button" data-bs-toggle="dropdown" aria-expanded="false">
-          {% if user.avatar %}
-            <img src="{{ user.avatar.url }}" alt="avatar" class="rounded-circle me-2 navbar-avatar">
-          {% else %}
-            <span class="avatar-ph me-2">{{ user.username|default:user.email|slice:":1"|upper }}</span>
+        {% if user.is_authenticated %}
+          {% url 'posts:user_posts' as user_posts_url %}
+          {% if request.path != user_posts_url %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'posts:user_posts' %}">My Posts</a></li>
           {% endif %}
-          <span class="d-none d-sm-inline navbar-username">{{ user.username|default:user.email }}</span>
-        </a>
-        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileMenu">
-          <li><a class="dropdown-item" href="{% url 'users:my_profile' %}">My Profile</a></li>
-          <li><a class="dropdown-item" href="{% url 'posts:user_posts' %}">My Posts</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li>
-            <form method="post" action="{% url 'account_logout' %}" class="px-3 py-1">
-              {% csrf_token %}
-              <button type="submit" class="dropdown-item px-0">Logout</button>
-            </form>
-          </li>
+        {% endif %}
+      </ul>
+
+      <div class="d-flex align-items-center ms-auto gap-2">
+        <form class="d-flex align-items-center search-inline me-2" role="search" method="get" action="{% url 'posts:list' %}">
+          <label for="nav-search" class="visually-hidden">Search posts</label>
+          <input id="nav-search" name="q" class="form-control form-control-sm me-1" type="search" placeholder="Search..." aria-label="Search posts" value="{{ request.GET.q|default_if_none:'' }}">
+          <button class="btn btn-outline-primary btn-sm" type="submit" aria-label="Submit search"><i class="bi bi-search"></i></button>
+        </form>
+
+        <ul class="navbar-nav d-flex flex-row align-items-center mb-0">
+          {% include "includes/notifications_dropdown.html" %}
+          {% include "includes/navbar_messages.html" %}
+
+          {% if user.is_authenticated %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                {% if user.avatar %}
+                  <img src="{{ user.avatar.url }}" alt="avatar" class="rounded-circle me-2 navbar-avatar">
+                {% else %}
+                  <span class="avatar-ph me-2">{{ user.username|default:user.email|slice:":1"|upper }}</span>
+                {% endif %}
+                <span class="d-none d-sm-inline navbar-username">{{ user.username|default:user.email }}</span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileMenu">
+                <li><a class="dropdown-item" href="{% url 'users:my_profile' %}">My Profile</a></li>
+                <li><a class="dropdown-item" href="{% url 'posts:user_posts' %}">My Posts</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <form method="post" action="{% url 'account_logout' %}" class="px-3 py-1">
+                    {% csrf_token %}
+                    <button type="submit" class="dropdown-item px-0">Logout</button>
+                  </form>
+                </li>
+              </ul>
+            </li>
+          {% else %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="authMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">Account</a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="authMenu">
+                <li><a class="dropdown-item" href="{% url 'account_login' %}">Login</a></li>
+                <li><a class="dropdown-item" href="{% url 'account_signup' %}">Create account</a></li>
+              </ul>
+            </li>
+          {% endif %}
         </ul>
-      </li>
-    {% else %}
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="authMenu"
-           role="button" data-bs-toggle="dropdown" aria-expanded="false">Account</a>
-        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="authMenu">
-          <li><a class="dropdown-item" href="{% url 'account_login' %}">Login</a></li>
-          <li><a class="dropdown-item" href="{% url 'account_signup' %}">Create account</a></li>
-        </ul>
-      </li>
-    {% endif %}
-  </ul>
-
-</div>
-
-
+      </div>
     </div>
   </div>
 </nav>
-
-<style>
-.navbar-custom {
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  min-height: 72px;
-  padding-top: 0.65rem;
-  padding-bottom: 0.65rem;
-}
-
-.navbar-custom .navbar-brand {
-  font-size: 1.45rem;
-  letter-spacing: 0.4px;
-}
-
-.navbar-custom .nav-link {
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-  padding-left: 0.6rem;
-  padding-right: 0.6rem;
-  font-weight: 600;
-  font-size: 0.98rem;
-}
-
-.navbar-avatar {
-  width: 36px;
-  height: 36px;
-  object-fit: cover;
-}
-
-.avatar-ph {
-  width: 36px;
-  height: 36px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: rgba(233, 236, 239, 0.9);
-  color: #495057;
-  font-weight: 700;
-  font-size: 0.95rem;
-}
-
-.navbar-username {
-  font-weight: 600;
-  margin-right: 0.25rem;
-}
-
-@media (max-width: 576px) {
-  .navbar-custom {
-    min-height: 60px;
-    padding-top: 0.45rem;
-    padding-bottom: 0.45rem;
-  }
-  .avatar-ph, .navbar-avatar { width: 30px; height: 30px; }
-}
-
-.navbar-custom .dropdown-menu {
-  background: #fff;
-  opacity: 1;
-}
-
-.navbar-custom.scrolled {
-  box-shadow: 0 6px 18px rgba(20, 20, 20, 0.06);
-  border-bottom: 1px solid rgba(0,0,0,0.06);
-}
-</style>

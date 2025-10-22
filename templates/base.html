@@ -11,97 +11,8 @@
   <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.4/font/bootstrap-icons.css">
 
-  {% block extra_css %}
-  <style>
-#comments-list { display: flex; flex-direction: column; gap: .75rem; }
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
 
-.comment-item {
-  width: 100%;
-  padding: .5rem .6rem;
-  border-radius: .45rem;
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(0,0,0,0.03);
-}
-
-.author-block {
-  display: flex;
-  align-items: center;
-  gap: .5rem;
-  flex: 0 1 auto;
-  white-space: nowrap;
-}
-
-.comment-actions {
-  flex: 0 0 auto;
-  align-items: center;
-}
-
-.comment-actions .btn {
-  padding: .25rem .5rem;
-  font-size: .82rem;
-  line-height: 1;
-  border-radius: .35rem;
-}
-
-.comment-item:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,0,0,0.04); }
-
-@media (max-width: 576px) {
-  .comment-actions { gap: .35rem; }
-  .author-block { font-size: .95rem; }
-}
-
-.navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 99999 !important;
-}
-
-.navbar .dropdown-menu,
-.dropdown-menu.show {
-  z-index: 100000 !important;
-}
-
-main.container {
-  padding-top: 70px;
-}
-
-/* card hover */
-.hover-card, .card {
-  position: relative;
-  z-index: 1;
-}
-
-.hover-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
-  z-index: 2;
-}
-
-.messages-list { display: flex; flex-direction: column; gap: .8rem; padding: 1rem; }
-.message-row { display: flex; align-items: flex-end; gap: .6rem; }
-.message-row.them { justify-content: flex-start; }
-.message-row.me { justify-content: flex-end; }
-.avatar-sm { width:40px; height:40px; border-radius:50%; object-fit:cover; }
-.message-bubble { max-width: 72%; padding: .6rem .9rem; border-radius: 14px; box-shadow: 0 6px 18px rgba(20,20,20,0.04); word-break: break-word; }
-.message-bubble--them { background: #f8f9fa; color: #212529; border-top-left-radius: 4px; }
-.message-bubble--me { background: var(--bs-primary, #0d6efd); color: #fff; text-align: right; border-top-right-radius: 4px; }
-.message-bubble--them::after,
-.message-bubble--me::after { content: ""; width: 10px; height: 10px; position: relative; display: block; }
-.message-row.them .message-bubble--them::after { transform: translate(-14px, 10px) rotate(45deg); background: #f8f9fa; margin-left: -10px; z-index: -1; }
-.message-row.me .message-bubble--me::after { transform: translate(14px, 10px) rotate(45deg); background: var(--bs-primary, #0d6efd); margin-left: 10px; z-index: -1; }
-.message-subject { font-size: .95rem; }
-.message-body { white-space: pre-wrap; }
-.meta .sender-name { font-size: .9rem; }
-.meta .time { font-size: .75rem; opacity: .7; }
-@media (max-width:576px) {
-  .message-bubble { max-width: 86%; }
-  .avatar-sm { width:32px; height:32px; }
-}
-
-  </style>
-  {% endblock extra_css %}
 
 </head>
 <body>
@@ -136,7 +47,6 @@ main.container {
   <script src="{% static 'js/subscriptions.js' %}" defer></script>
   <script src="{% static 'js/messaging.js' %}" defer></script>
   <script src="{% static 'js/notifications.js' %}" defer></script>
-
   {% endblock %}
 
 </body>

@@ -3,12 +3,12 @@ from django.db.models import OuterRef, Subquery, Count
 from django.utils import timezone
 from django.views.generic import ListView, DetailView, FormView
 from django.views.generic.edit import FormMixin
-from .models import Conversation, Participant, Message
+from .models import Participant, Message
 from .forms import MessageForm
 from django.http import JsonResponse, HttpResponseForbidden, HttpResponseBadRequest, HttpResponseServerError
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.views import View
 from .models import Conversation
@@ -184,7 +184,23 @@ class ConversationSendMessageView(LoginRequiredMixin, ParticipantRequiredMixin, 
         msg.conversation = self.conversation
         msg.sender = self.request.user
         msg.save()
+
         Participant.objects.filter(conversation=self.conversation, user=self.request.user).update(last_read=timezone.now())
+
+        try:
+            from apps.notifications.services import create_notification
+            others = msg.conversation.participants.exclude(user=msg.sender, is_active=False).select_related('user')
+            for p in others:
+                if getattr(p, 'user', None) and p.user_id != msg.sender_id:
+                    create_notification(
+                        recipient=p.user,
+                        actor=msg.sender,
+                        verb="sent you a message",
+                        target=msg.conversation,
+                        data={"conversation_id": msg.conversation.pk, "message_id": msg.pk}
+                    )
+        except Exception:
+            pass
 
         if self.request.headers.get("x-requested-with") == "XMLHttpRequest":
             return JsonResponse({
@@ -197,6 +213,7 @@ class ConversationSendMessageView(LoginRequiredMixin, ParticipantRequiredMixin, 
                 }
             })
         return redirect(reverse("messaging:conversation_detail", args=[self.conversation.pk]))
+
 
 
 

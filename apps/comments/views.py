@@ -9,6 +9,8 @@ from .models import Comment
 from .forms import CommentForm
 from apps.posts.models import Post
 from django.utils import timezone
+from django.urls import reverse
+
 
 
 class AddCommentView(LoginRequiredMixin, CreateView):
@@ -24,6 +26,34 @@ class AddCommentView(LoginRequiredMixin, CreateView):
         comment.user = self.request.user
         comment.post = self.post_obj
         comment.save()
+
+        # --- notify post author ---
+        try:
+            from apps.notifications.services import create_notification
+            post_author = getattr(comment.post, "user", None)
+            if post_author and post_author != comment.user:
+                post_url = None
+                try:
+                    if hasattr(comment.post, "get_absolute_url"):
+                        post_url = comment.post.get_absolute_url()
+                except Exception:
+                    post_url = None
+                if not post_url:
+                    try:
+                        post_url = reverse("posts:detail", args=[comment.post.pk])
+                    except Exception:
+                        post_url = None
+
+                create_notification(
+                    recipient=post_author,
+                    actor=comment.user,
+                    verb="commented on your post",
+                    target=comment.post,
+                    data={"post_id": comment.post.pk, "comment_id": comment.pk, "url": post_url},
+                )
+        except Exception:
+            pass
+
 
         if self.request.headers.get("x-requested-with") == "XMLHttpRequest":
             html = render_to_string("apps/comments/_comment.html",

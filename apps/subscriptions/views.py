@@ -51,6 +51,19 @@ class ToggleSubscriptionView(View):
 
         followers_count = Subscription.objects.filter(following=target, is_active=True).count()
 
+        if following:
+            try:
+                from apps.notifications.services import create_notification
+                create_notification(
+                    recipient=target,
+                    actor=request.user,
+                    verb="started following you",
+                    target=request.user,
+                    data={"follower_id": request.user.pk, "follower_username": request.user.username}
+                )
+            except Exception:
+                pass
+
         return JsonResponse({
             "status": "ok",
             "is_subscribed": following,

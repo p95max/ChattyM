@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "apps.likes",
     "apps.subscriptions",
     "apps.messaging",
+    "apps.notifications",
 ]
 
 MIDDLEWARE = [
@@ -70,6 +71,8 @@ TEMPLATES = [
 
                 "apps.messaging.context_processors.messaging_notifications",
                 "apps.messaging.context_processors.unread_messages_count",
+                "apps.notifications.context_processors.notifications_for_nav"
+
             ],        },
     }
 ]

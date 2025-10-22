@@ -21,6 +21,7 @@ urlpatterns = [
     path("likes/", include("apps.likes.urls", namespace="likes")),
     path("subscriptions/", include("apps.subscriptions.urls", namespace="subscriptions")),
     path("messages/", include("apps.messaging.urls", namespace="messages")),
+    path("notifications/", include("apps.notifications.urls", namespace="notifications")),
 
     path("api/", include(router.urls)),
 ]

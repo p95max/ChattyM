@@ -1,0 +1,50 @@
+{% load static %}
+<div class="nav-item dropdown">
+  <a class="nav-link position-relative dropdown-toggle" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <i class="bi bi-bell"></i>
+    <span id="nav-notifications-count"
+          class="badge bg-danger rounded-pill {% if not unread_notifications_count %}d-none{% endif %}">
+      {{ unread_notifications_count|default:0 }}
+    </span>
+  </a>
+
+  <div class="dropdown-menu dropdown-menu-end p-2" aria-labelledby="notificationsDropdown" style="min-width: 300px;">
+    <div class="d-flex justify-content-between align-items-center px-2">
+      <strong>Notifications</strong>
+      <small><a href="#" id="mark-all-notifications" class="small">Mark all read</a></small>
+    </div>
+
+    <div id="notifications-list" class="mt-2">
+      {% for n in recent_notifications_for_nav %}
+        <div class="dropdown-item notification-item {% if n.unread %}fw-bold{% endif %}" data-id="{{ n.pk }}">
+          <div><small class="text-muted">{{ n.created_at|date:"d.m.Y H:i" }}</small></div>
+
+          <div>
+            {% if n.actor %}
+              <a href="{% url 'users:author_profile' n.actor.username %}"
+                 class="me-1 text-decoration-none fw-semibold">
+                {{ n.actor.get_full_name|default:n.actor.username }}
+              </a>
+            {% endif %}
+            {{ n.verb }}
+          </div>
+
+          {% if n.data.url %}
+            <div class="mt-1">
+              <a href="{{ n.data.url }}{% if n.data.comment_id %}#comment-{{ n.data.comment_id }}{% endif %}" class="small">
+                View
+              </a>
+            </div>
+          {% endif %}
+        </div>
+      {% empty %}
+        <div class="text-muted small p-2">No notifications</div>
+      {% endfor %}
+    </div>
+
+    <div class="dropdown-divider"></div>
+    <div class="text-center">
+      <a class="small" href="{% url 'notifications:recent' %}">View all</a>
+    </div>
+  </div>
+</div>

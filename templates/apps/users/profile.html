@@ -202,39 +202,7 @@
 {% endblock %}
 
 {% block extra_css %}
-<style>
-.card { border-radius: 14px; }
-.follower-list .list-group-item { border: none; padding: .5rem 0; }
-.follower-list .list-group-item + .list-group-item { border-top: 1px solid rgba(0,0,0,0.04); }
-/* follower widget styling */
-.follower-widget .card-header { padding: .6rem .9rem; }
-.follower-widget .card-body { max-height: 220px; overflow: auto; } /* скролл если много */
-.follower-widget .list-group-item { border: none; display:flex; align-items:center; }
-.follower-widget .list-group-item + .list-group-item { border-top: 1px solid rgba(0,0,0,0.04); }
-.follower-widget .follower-meta { min-width:0; } /* для text-truncate */
-.subscribe-btn {
-  min-width: 84px;
-  padding: .25rem .6rem;
-  font-weight:600;
-  border-radius: 999px;
-}
-.subscribe-btn.subscribed {
-  background: transparent;
-  color: var(--bs-primary, #0d6efd);
-  border: 1px solid rgba(13,110,253,0.12);
-  box-shadow: none;
-}
-
-/* message button styling */
-.message-btn {
-  min-width: 120px;
-  font-weight: 700;
-  border-radius: 999px;
-  padding-left: .6rem;
-  padding-right: .6rem;
-}
-.message-btn i { font-size: 1.02rem; vertical-align: middle; }
-</style>
+     <link href="{% static 'css/profile.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block scripts %}
@@ -254,18 +222,15 @@ document.addEventListener('DOMContentLoaded', function () {
     var input = document.getElementById('compose-recipient-id');
     if (input) input.value = recipientId;
 
-    // Обновим заголовок модала
     var title = composeModalEl.querySelector('.modal-title');
     if (title) title.textContent = recipientName ? ('Новое сообщение — ' + recipientName) : 'Новое сообщение';
 
-    // фокус на textarea после показа
     setTimeout(function () {
       var ta = document.getElementById('compose-body');
       if (ta) ta.focus();
     }, 200);
   });
 
-  // Предотвращаем двойную отправку
   var form = document.getElementById('composeMessageForm');
   if (form) {
     form.addEventListener('submit', function (e) {

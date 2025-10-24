@@ -38,6 +38,16 @@
           {% include "includes/notifications_dropdown.html" %}
           {% include "includes/navbar_messages.html" %}
 
+            <button id="theme-toggle"
+                    class="btn btn-sm btn-outline-secondary"
+                    type="button"
+                    aria-pressed="false"
+                    title="Toggle theme">
+              <i class="bi" aria-hidden="true"></i>
+              <span class="visually-hidden theme-sr">Toggle theme</span>
+            </button>
+
+
           {% if user.is_authenticated %}
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
